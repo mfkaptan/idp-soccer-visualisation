@@ -103,8 +103,27 @@ def db():
     db_migrate()
 
 
+@task
+def migrations():
+    run(MANAGE + ' makemigrations')
+
+    run(MANAGE + ' migrate')
+
+
+@task
+def import_match():
+    print("Importing matches")
+    run(MANAGE + ' import_matchinformation /home/kaptan/workspace/idp/TRACAB/MatchInformation__DFL-MAT-0025I9.xml')
+
+
+@task
+def import_events():
+    print("Importing events")
+    run(MANAGE + ' import_events /home/kaptan/workspace/idp/TRACAB/Events_DFL-MAT-0025I9.xml')
+
+
 @task(default=True)
-def main(pyversion=DEFAULT_PYTHON):
+def main(pyversion=DEFAULT_PYTHON, all=False, migrate=False, xml=False):
     """
     Does a full build for a python version and environment
     :param pyversion:
@@ -112,3 +131,11 @@ def main(pyversion=DEFAULT_PYTHON):
     """
     setup(pyversion=pyversion)
     db()
+
+    if all or migrate:
+        migrations()
+
+    if all or xml:
+        import_match()
+        import_events()
+

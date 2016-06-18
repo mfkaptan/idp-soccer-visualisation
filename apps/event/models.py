@@ -18,15 +18,15 @@ class Event(models.Model):
     time = models.DateTimeField("EventTime", null=True)
     match = models.ForeignKey(Match)
 
-    content_type = models.ForeignKey(ContentType)
+    content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        try:
-            return str(self.content_type)
-        except:
-            return "Event"
+        return str(self.content_object)
+
+    class Meta:
+        unique_together = ('content_type', 'object_id')
 
 
 class Substitution(EventElement):
@@ -37,8 +37,8 @@ class Substitution(EventElement):
 
     def __str__(self):
         try:
-            s = str.format("Substitution For: {team}, Out: {p_out} | In: {p_in}",
-                           team.name, player_out, player_in)
+            return str.format("Substitution For: {team}, Out: {p_out} | In: {p_in}",
+                              team=self.team.name, p_out=self.player_out, p_in=self.player_in)
         except:
             return "Substitution"
 
@@ -86,16 +86,16 @@ class Offside(EventElement):
 class Foul(EventElement):
     team_fouler = models.ForeignKey(MatchTeam, null=True, verbose_name='TeamFouler', related_name='team_fouler+')
     team_fouled = models.ForeignKey(MatchTeam, null=True, verbose_name='TeamFouled', related_name='team_fouled+')
-    fouler = models.CharField(max_length=50, null=True, verbose_name='Fouler')
-    fouled = models.CharField(max_length=50, null=True, verbose_name='Fouled')
+    fouler = models.ForeignKey(MatchPlayer, null=True, verbose_name='Fouler', related_name='fouler')
+    fouled = models.ForeignKey(MatchPlayer, null=True, verbose_name='Fouled', related_name='fouled')
     foul_type = models.CharField(max_length=50, null=True, verbose_name='FoulType')
 
 
 class TacklingGame(EventElement):
     winner_team = models.ForeignKey(MatchTeam, null=True, verbose_name='WinnerTeam', related_name='winner_team+')
-    winner = models.CharField(max_length=50, null=True, verbose_name='Winner')
+    winner = models.ForeignKey(MatchPlayer, null=True, verbose_name='Winner', related_name='winner')
     loser_team = models.ForeignKey(MatchTeam, null=True, verbose_name='LoserTeam', related_name='loser_team+')
-    loser = models.CharField(max_length=50, null=True, verbose_name='Loser')
+    loser = models.ForeignKey(MatchPlayer, null=True, verbose_name='Loser', related_name='loser')
     goal_keeper_involved = models.CharField(max_length=50, null=True, verbose_name='GoalKeeperInvolved')
     winner_role = models.CharField(max_length=50, null=True, verbose_name='WinnerRole')
     loser_role = models.CharField(max_length=50, null=True, verbose_name='LoserRole')
@@ -129,6 +129,9 @@ class ShotAtGoal(EventElement):
     ball_possession_phase = models.CharField(max_length=50, null=True, verbose_name='BallPossessionPhase')
     after_free_kick = models.CharField(max_length=50, null=True, verbose_name='AfterFreeKick')
 
+    def __str__(self):
+        return str(self.content_object)
+
 
 class SuccessfulShot(EventElement):
     assist = models.CharField(max_length=50, null=True, verbose_name='Assist')
@@ -137,6 +140,9 @@ class SuccessfulShot(EventElement):
     goalzone = models.CharField(max_length=50, null=True, verbose_name='Goalzone')
     counter_attack = models.CharField(max_length=50, null=True, verbose_name='CounterAttack')
     current_result = models.CharField(max_length=50, null=True, verbose_name='CurrentResult')
+
+    def __str__(self):
+        return "Goal! " + self.current_result
 
 
 class SavedShot(EventElement):
@@ -185,10 +191,17 @@ class Play(EventElement):
     blocked = models.CharField(max_length=50, null=True, verbose_name='Blocked')
     technique = models.CharField(max_length=50, null=True, verbose_name='Technique')
 
+    def __str__(self):
+        try:
+            return str(self.content_object) + " from " + str(self.player)
+        except:
+            return "Play"
+
 
 class Pass(EventElement):
     pass_origin = models.CharField(max_length=50, null=True, verbose_name='PassOrigin')
     free_kick_layup = models.CharField(max_length=50, null=True, verbose_name='FreeKickLayup')
+
     def __str__(self):
         return "Pass"
 
@@ -291,7 +304,6 @@ class GoalKick(EventElement):
     content_object = GenericForeignKey('content_type', 'object_id')
 
 
-
 class BallClaiming(EventElement):
     team = models.ForeignKey(MatchTeam, null=True, verbose_name='Team', related_name='team+')
     player = models.ForeignKey(MatchPlayer, null=True, verbose_name='Player', related_name='player+')
@@ -309,12 +321,10 @@ class Kickoff(EventElement):
     content_object = GenericForeignKey('content_type', 'object_id')
 
 
-
 class KickoffAfterGoal(EventElement):
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
-
 
 
 class Delete(EventElement):

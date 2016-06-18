@@ -9,6 +9,7 @@ from apps.match.models import *
 class Command(BaseCommand):
     help = 'Imports given match information xml to database'
     MATCH_ID = None
+    OBJ_COUNT = 0
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
@@ -122,6 +123,10 @@ class Command(BaseCommand):
             self.object_from_elem(m, e)
             m.save()
 
+        else:
+            return
+        self.OBJ_COUNT += 1
+
     def fast_iter(self, context):
         for event, elem in context:
             self.process(elem)
@@ -137,4 +142,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         context = etree.iterparse(options['file'])
         self.fast_iter(context)
-
+        print(self.OBJ_COUNT, " objects imported.")

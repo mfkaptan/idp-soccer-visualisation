@@ -11,6 +11,7 @@ from apps.match.models import MatchPlayer, MatchTeam
 
 class Command(BaseCommand):
     help = 'Imports given event xml to database'
+    OBJ_COUNT = 0
 
     def add_arguments(self, parser):
         parser.add_argument('file', type=str)
@@ -21,6 +22,14 @@ class Command(BaseCommand):
         for f in obj._meta.get_fields():
             if not f.many_to_one and f.related_model is None:
                 d[f.verbose_name] = f.name
+            elif f.many_to_one and f.related_model is not None and f.name != 'content':
+                try:
+                    if isinstance(f.related_model(), MatchTeam):
+                        setattr(obj, f.name, f.related_model.objects.get(team__team_id=e.get(f.verbose_name)))
+                    elif isinstance(f.related_model(), MatchPlayer):
+                        setattr(obj, f.name, f.related_model.objects.get(player__player_id=e.get(f.verbose_name)))
+                except:
+                    pass
 
         for tag in e.keys():
             if tag in d and hasattr(obj, d[tag]):
@@ -35,7 +44,6 @@ class Command(BaseCommand):
             obj.content_object = self.recursive_process(e)
 
         obj.save()
-        print(obj)
         return obj
 
     def process(self, e):
@@ -46,6 +54,7 @@ class Command(BaseCommand):
 
         event.content_object = self.recursive_process(e)
         event.save()
+        self.OBJ_COUNT += 1
 
     def fast_iter(self, context):
         for elem in context.iterfind("Event"):
@@ -62,4 +71,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         context = etree.parse(options['file'])
         self.fast_iter(context)
+        print(self.OBJ_COUNT, " events imported.")
 

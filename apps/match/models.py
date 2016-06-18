@@ -76,6 +76,9 @@ class MatchStadium(models.Model):
         except:
             return "MatchStadium"
 
+    class Meta:
+        unique_together = ('stadium', 'match')
+
 
 class Team(models.Model):
     team_id = models.CharField("TeamId", max_length=50, primary_key=True)
@@ -122,6 +125,9 @@ class MatchTeam(models.Model):
             return self.team.name
         except:
             return "MatchTeam"
+
+    class Meta:
+        unique_together = ('team', 'match')
 
 
 class Person(models.Model):
