@@ -1,0 +1,4 @@
+Django==1.9.7
+invoke==0.13.0
+lxml==3.6.0
+psycopg2==2.6.1
