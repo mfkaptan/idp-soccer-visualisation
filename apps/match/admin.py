@@ -1,15 +1,7 @@
 from django.contrib import admin
+from django.apps import apps
 
-from .models import (Stadium, MatchStadium, Match, Team,
-                     MatchTeam, Person, Player, MatchPlayer, Referee)
+app = apps.get_app_config('match')
 
-admin.site.register(Stadium)
-admin.site.register(MatchStadium)
-admin.site.register(Match)
-admin.site.register(Team)
-admin.site.register(MatchTeam)
-admin.site.register(Person)
-admin.site.register(Referee)
-admin.site.register(Player)
-admin.site.register(MatchPlayer)
-
+for model_name, model in app.models.items():
+    admin.site.register(model)

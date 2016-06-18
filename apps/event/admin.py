@@ -1,5 +1,7 @@
 from django.contrib import admin
+from django.apps import apps
 
-from .models import Event
+app = apps.get_app_config('event')
 
-admin.site.register(Event)
+for model_name, model in app.models.items():
+    admin.site.register(model)

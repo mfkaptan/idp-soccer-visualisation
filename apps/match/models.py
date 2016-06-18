@@ -194,3 +194,6 @@ class MatchPlayer(models.Model):
             return self.player.short_name
         except:
             return "MatchPlayer"
+
+    class Meta:
+        unique_together = ('player', 'match_team')

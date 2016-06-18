@@ -138,4 +138,3 @@ def main(pyversion=DEFAULT_PYTHON, all=False, migrate=False, xml=False):
     if all or xml:
         import_match()
         import_events()
-
