@@ -93,12 +93,13 @@ def db_migrate():
 
 
 @task
-def db():
+def db(reset=False):
     """
     Runs all database tasks
     :param recreate:
     """
-    db_recreate()
+    if reset:
+        db_recreate()
 
     db_migrate()
 
@@ -123,18 +124,18 @@ def import_events():
 
 
 @task(default=True)
-def main(pyversion=DEFAULT_PYTHON, all=False, migrate=False, xml=False):
+def main(pyversion=DEFAULT_PYTHON, reset=False, migrate=False, xml=False):
     """
     Does a full build for a python version and environment
     :param pyversion:
     :param env:
     """
     setup(pyversion=pyversion)
-    db()
+    db(recreate=reset)
 
-    if all or migrate:
+    if reset or migrate:
         migrations()
 
-    if all or xml:
+    if reset or xml:
         import_match()
         import_events()
