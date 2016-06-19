@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.functional import cached_property
 
 
 class Match(models.Model):
@@ -19,17 +20,20 @@ class Match(models.Model):
     total_time_first_half = models.IntegerField("TotalTimeFirstHalf", null=True, blank=True)
     total_time_second_half = models.IntegerField("TotalTimeSecondHalf", null=True, blank=True)
 
-    @property
+    @cached_property
     def home_team(self):
-        return self.matchteam_set.filter(role="home")
+        return self.matchteam_set.get(role="home")
 
-    @property
+    @cached_property
     def away_team(self):
-        return self.matchteam_set.filter(role="guest")
+        return self.matchteam_set.get(role="guest")
 
-    @property
+    @cached_property
     def stadium(self):
         return self.stadium
+
+    def get_score(self):
+        return "3:1"
 
     def __str__(self):
         return self.game_title
@@ -107,7 +111,7 @@ class MatchTeam(models.Model):
     team = models.ForeignKey(Team, null=True)
     match = models.ForeignKey(Match, null=True)
 
-    @property
+    @cached_property
     def name(self):
         return self.team.name
 

@@ -1,6 +1,10 @@
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse
+from django.views.generic import ListView
+
+from .models import Match
 
 # Create your views here.
-def index(request):
-    context = {}
-    return render(request, 'frontend/index.html', context)
+
+class MatchList(ListView):
+    model = Match
+

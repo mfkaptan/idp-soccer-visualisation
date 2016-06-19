@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Soccer Visualisation{% endblock %}
+{% block body_block %}
+    <div class="container-fluid text-center">
+        <div class="row content">
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-8 ">
+            <h1>Match Table</h1>
+
+                {% include "match/partials/match_list_table.html" with match_list=match_list %}
+            </div>
+            <div class="col-sm-2">
+            </div>
+        </div>
+    </div>
+{% endblock %}

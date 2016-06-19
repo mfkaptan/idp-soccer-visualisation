@@ -1,0 +1,118 @@
+{% load match_row_maker %}
+<table class="table table-hover">
+    <thead>
+        <th class="text-xs-center">
+            Home
+        </th>
+        <th class="text-xs-center">
+            Score
+        </th>
+        <th class="text-xs-center">
+            Away
+        </th>
+    </thead>
+    <tbody>
+        {% for m in match_list %}
+            {% match_row m %}
+        {% endfor %}
+        <tr>
+            <td class="table-success text-xs-center">
+                Borussia Dortmund
+            </td>
+            <td class="table-info text-xs-center">
+                3:2
+            </td>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+        </tr>
+        <tr>
+            <td class="table-warning text-xs-center">
+                FC Bayern München
+            </td>
+            <td class="table-info text-xs-center">
+                2:2
+            </td>
+            <td class="table-warning text-xs-center">
+                Borussia Dortmund
+            </td>
+        </tr>
+        <tr>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+            <td class="table-info text-xs-center">
+                2:3
+            </td>
+            <td class="table-success text-xs-center">
+                Borussia Mönchengladbach
+            </td>
+        </tr>
+        <tr>
+            <td class="table-success text-xs-center">
+                Borussia Dortmund
+            </td>
+            <td class="table-info text-xs-center">
+                3:2
+            </td>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+        </tr>
+        <tr>
+            <td class="table-warning text-xs-center">
+                FC Bayern München
+            </td>
+            <td class="table-info text-xs-center">
+                2:2
+            </td>
+            <td class="table-warning text-xs-center">
+                Borussia Dortmund
+            </td>
+        </tr>
+        <tr>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+            <td class="table-info text-xs-center">
+                2:3
+            </td>
+            <td class="table-success text-xs-center">
+                Borussia Mönchengladbach
+            </td>
+        </tr>
+        <tr>
+            <td class="table-success text-xs-center">
+                Borussia Dortmund
+            </td>
+            <td class="table-info text-xs-center">
+                3:2
+            </td>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+        </tr>
+        <tr>
+            <td class="table-warning text-xs-center">
+                FC Bayern München
+            </td>
+            <td class="table-info text-xs-center">
+                2:2
+            </td>
+            <td class="table-warning text-xs-center">
+                Borussia Dortmund
+            </td>
+        </tr>
+        <tr>
+            <td class="table-danger text-xs-center">
+                Schalke 04
+            </td>
+            <td class="table-info text-xs-center">
+                2:3
+            </td>
+            <td class="table-success text-xs-center">
+                Borussia Mönchengladbach
+            </td>
+        </tr>
+    </tbody>
+</table>
