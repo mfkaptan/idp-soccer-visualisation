@@ -1,23 +1,26 @@
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+<div class="pos-f-t">
+  <nav class="navbar navbar-full navbar-dark navbar-fixed-top bg-inverse">
+    <div class="container">
+      <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navCollapse">
+      ☰
       </button>
-      <a class="navbar-brand" href="#">Logo</a>
+      <div class="collapse navbar-toggleable-xs" id="navCollapse">
+        <a class="navbar-brand" href="#">Soccer Visualisation</a>
+        <ul class="nav navbar-nav">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Matches <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Teams</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Players</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Other</a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Projects</a></li>
-        <li><a href="#">Contact</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+  </nav>
+</div>

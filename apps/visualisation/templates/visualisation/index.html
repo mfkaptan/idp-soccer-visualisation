@@ -1,29 +1,30 @@
 {% extends "base.html" %}
 {% block title %}Soccer Visualisation{% endblock %}
+
 {% block body_block %}
-    <div class="container-fluid text-center">
-        <div class="row content">
-            <div class="col-sm-2 sidenav">
-                <h2>HOME</h2>
-                <h3>team_name</h3>
-                <ul>
-                    <li>
-                        player
-                    </li>
-                </ul>
-            </div>
-            <div class="col-sm-8 text-center">
-                <h1> game_title </h1>
-            </div>
-            <div class="col-sm-2 sidenav">
-                <h2>GUEST</h2>
-                <h3>team_name</h3>
-                <ul>
-                    <li>
-                        player
-                    </li>
-                </ul>
-            </div>
+<div class="container-fluid text-center">
+    <div class="row content">
+        <div class="col-sm-2">
+            <h2>HOME</h2>
+            <h3>team_name</h3>
+            <ul>
+                <li>
+                    player
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-8 ">
+            <h1> game_title </h1>
+        </div>
+        <div class="col-sm-2">
+            <h2>GUEST</h2>
+            <h3>team_name</h3>
+            <ul>
+                <li>
+                    player
+                </li>
+            </ul>
         </div>
     </div>
+</div>
 {% endblock %}
