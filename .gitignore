@@ -90,3 +90,6 @@ ENV/
 
 # Sublime project settings
 *.sublime-*
+
+# Ignore static files
+/static/
