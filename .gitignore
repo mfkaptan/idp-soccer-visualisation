@@ -93,3 +93,23 @@ ENV/
 
 # Ignore static files
 /static/
+/media/
+/private/
+
+node_modules/
+nbproject/
+
+apps/frontend/static/css
+apps/frontend/static/bower_components
+
+.idea/
+.project
+.pydevproject
+.settings/
+.sonar/
+.vagrant
+.ssh
+.sass-cache/
+
+run/gunicorn.sock
+junit.xml
