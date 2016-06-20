@@ -1,7 +1,12 @@
 from django.conf.urls import url
 
-from .views import MatchList
+from . import views
 
 urlpatterns = [
-    url(r'^$', MatchList.as_view()),
+    url(r'^$',
+        views.MatchList.as_view(),
+        name="match_list"),
+    url(r'^(?P<pk>[A-Z-0-9]+)/match_detail$',
+        views.MatchDetail.as_view(),
+        name="match_detail"),
 ]

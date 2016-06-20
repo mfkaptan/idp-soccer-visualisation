@@ -28,10 +28,6 @@ class Match(models.Model):
     def away_team(self):
         return self.matchteam_set.get(role="guest")
 
-    @cached_property
-    def stadium(self):
-        return self.stadium
-
     def get_score(self):
         return "3:1"
 
@@ -115,7 +111,7 @@ class MatchTeam(models.Model):
     def name(self):
         return self.team.name
 
-    def get_players(self, match_id):
+    def get_players(self):
         return self.matchplayer_set.all()
 
     def get_trainer_staff(self):
@@ -189,7 +185,7 @@ class MatchPlayer(models.Model):
     player = models.ForeignKey(Player, null=True)
     match_team = models.ForeignKey(MatchTeam, null=True)
 
-    @property
+    @cached_property
     def name(self):
         return self.player.short_name
 
