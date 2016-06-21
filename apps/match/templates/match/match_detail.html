@@ -8,7 +8,7 @@
                 {% include "match/partials/team_sidebar.html" with team=match.home_team %}
             </div>
             <div class="col-sm-8 ">
-                {% include "match/partials/match_visual.html" with match=match %}
+                {% include "match/partials/match_visual.html" with match=match data=data %}
             </div>
             <div class="col-sm-2">
                 <h2 class="text-xs-center">Away Team</h2>
@@ -17,3 +17,8 @@
         </div>
     </div>
 {% endblock %}
+
+{% block body_script_compressed %}
+{# Include js as view #}
+{% include "match/partials/match_visual.js.html" with match=match data=data %}
+{% endblock body_script_compressed %}

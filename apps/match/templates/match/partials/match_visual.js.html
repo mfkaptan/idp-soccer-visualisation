@@ -1,0 +1,83 @@
+{% load staticfiles %}
+
+<script type = "text/javascript">
+function init(svg, home_players, away_players)
+{
+
+};
+
+function parse(str, player)
+{
+
+}
+
+function convertCoord(x, y)
+{
+    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
+    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
+
+    return [x, y];
+};
+
+$(document).ready(function() {
+    /* Get svg */
+    var svg = d3.select("svg");
+
+    /* Get data */
+    var h1_str = ({{data.home_first_half | safe }});
+    var h2_str = ({{data.home_second_half | safe }});
+    var a1_str = ({{data.away_first_half | safe }});
+    var a2_str = ({{data.away_second_half | safe }});
+    var b1_str = ({{data.ball_first_half | safe }});
+    var b2_str = ({{data.ball_second_half | safe }});
+
+    var home_players = [];
+    var home_circle = {};
+    var away_circle = {};
+
+    for(var player in h1_str)
+    {
+        var p = JSON.parse(h1_str[player]);
+        home_players[player] = JSON.parse(h1_str[player]);
+
+        var frame = p[0]["fields"];
+        var xy = convertCoord(frame.x, frame.y);
+        document.home_circle[player].attr("cx", xy[0]).attr("cy", xy[1]);
+        home_circle[p.shirt_number] = svg.append("circle").attr("cx", -10)
+                                                          .attr("cy", -10)
+                                                          .attr("r", 10)
+                                                          .attr("stroke", "black")
+                                                          .attr("stroke-width", 2)
+                                                          .style("fill", "steelblue");
+    }
+    delete h1_str;
+
+    for(var p in away_players)
+    {
+        document.away_circle[p.shirt_number] = svg.append("circle").attr("cx", -10)
+                                                          .attr("cy", -10)
+                                                          .attr("r", 10)
+                                                          .attr("stroke", "black")
+                                                          .attr("stroke-width", 2)
+                                                          .style("fill", "red");
+    }
+
+    init(svg, home_players, away_players);
+
+    for (var player in h1_str) {
+        var p = JSON.parse(h1_str[player]);
+
+        var frame = p[0]["fields"];
+        var xy = convertCoord(frame.x, frame.y);
+        document.home_circle[player].attr("cx", xy[0]).attr("cy", xy[1]);
+    }
+
+    for (var player in a1_str) {
+        var p = JSON.parse(a1_str[player]);
+
+        var frame = p[0]["fields"];
+        var xy = convertCoord(frame.x, frame.y);
+        document.away_circle[player].attr("cx", xy[0]).attr("cy", xy[1]);
+    }
+});
+</script>
