@@ -3,12 +3,23 @@ from django.db import models
 from apps.match.models import Match, MatchTeam, MatchPlayer
 
 
+class FrameSetManager(models.Manager):
+    def get_for_player(self, player, min):
+        if half == 0:
+            return FrameSet.objects.filter(player_id=player)
+        else:
+            half = "firstHalf" if half == 1 else "secondHalf"
+            return FrameSet.objects.filter(player_id=player, half=half)
+
+
 class FrameSet(models.Model):
     game_section = models.CharField(max_length=20, null=True)
 
     match = models.ForeignKey(Match, null=True)
     team = models.ForeignKey(MatchTeam, null=True)
     player = models.ForeignKey(MatchPlayer, null=True)
+
+    objects = FrameSetManager()
 
     class Meta:
         verbose_name = "FrameSet"

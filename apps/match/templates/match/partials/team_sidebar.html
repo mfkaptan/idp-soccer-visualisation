@@ -7,7 +7,11 @@
 
   <div class="list-group list-group-flush">
     {# Team Name #}
+    {% if team.role == "home" %}
     <button type="button" class="list-group-item list-group-item-info">
+    {% else %}
+    <button type="button" class="list-group-item list-group-item-danger">
+    {% endif %}
       {{ team.name }}
     </button>
 
@@ -17,10 +21,14 @@
       {% elif player.playing_position %}
       <button type="button" class="list-group-item list-group-item-warning">
       {% else %}
-      <button type="button" class="list-group-item list-group-item-danger">
+      <button type="button" class="list-group-item list-group-item-default">
       {% endif %}
         {# Shirt Number #}
+        {% if team.role == "home" %}
         <span class="label label-info pull-xs-left">
+        {% else %}
+        <span class="label label-danger pull-xs-left">
+        {% endif %}
           {{player.shirt_number}}
         </span>
 
