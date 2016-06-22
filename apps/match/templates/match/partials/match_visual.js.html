@@ -38,33 +38,31 @@ $(document).ready(function() {
     for(var player in h1_str)
     {
         var p = JSON.parse(h1_str[player]);
-        home_players[player] = JSON.parse(h1_str[player]);
-
         var frame = p[0]["fields"];
         var xy = convertCoord(frame.x, frame.y);
-        document.home_circle[player].attr("cx", xy[0]).attr("cy", xy[1]);
-        home_circle[p.shirt_number] = svg.append("circle").attr("cx", -10)
-                                                          .attr("cy", -10)
-                                                          .attr("r", 10)
-                                                          .attr("stroke", "black")
-                                                          .attr("stroke-width", 2)
-                                                          .style("fill", "steelblue");
-    }
-    delete h1_str;
 
-    for(var p in away_players)
+        home_circle[player] = svg.append("circle").attr("cx", xy[0])
+                                                  .attr("cy", xy[1])
+                                                  .attr("r", 10)
+                                                  .attr("stroke", "black")
+                                                  .attr("stroke-width", 2)
+                                                  .style("fill", "steelblue");
+    }
+
+    for(var player in a1_str)
     {
-        document.away_circle[p.shirt_number] = svg.append("circle").attr("cx", -10)
-                                                          .attr("cy", -10)
-                                                          .attr("r", 10)
-                                                          .attr("stroke", "black")
-                                                          .attr("stroke-width", 2)
-                                                          .style("fill", "red");
+        var p = JSON.parse(a1_str[player]);
+        var frame = p[0]["fields"];
+        var xy = convertCoord(frame.x, frame.y);
+        away_circle[player] = svg.append("circle").attr("cx", xy[0])
+                                                  .attr("cy", xy[1])
+                                                  .attr("r", 10)
+                                                  .attr("stroke", "black")
+                                                  .attr("stroke-width", 2)
+                                                  .style("fill", "red");
     }
 
-    init(svg, home_players, away_players);
-
-    for (var player in h1_str) {
+/*    for (var player in h1_str) {
         var p = JSON.parse(h1_str[player]);
 
         var frame = p[0]["fields"];
@@ -78,6 +76,6 @@ $(document).ready(function() {
         var frame = p[0]["fields"];
         var xy = convertCoord(frame.x, frame.y);
         document.away_circle[player].attr("cx", xy[0]).attr("cy", xy[1]);
-    }
+    }*/
 });
 </script>
