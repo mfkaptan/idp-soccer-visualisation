@@ -1,55 +1,10 @@
 {% load staticfiles %}
 <div class="card text-xs-center" style="background-color: #333; border-color: #333;">
-  {# Logo #}
-  <div class="text-xs-center">
-    <img class="card-img-top" src="{% static 'img/logos' %}/{{team.team.pk}}.png" width="160" height="160">
-  </div>
-
   <div class="list-group list-group-flush">
-    {# Team Name #}
-    {% if team.role == "home" %}
-    <button type="button" class="list-group-item list-group-item-info">
-    {% else %}
-    <button type="button" class="list-group-item list-group-item-danger">
-    {% endif %}
-      {{ team.name }}
-    </button>
+    {# Team Squad #}
+    {% include "match/partials/team_squad.html" with team=team %}
 
-    {% for player in team.get_players %}
-      {% if player.starting %}
-      <button type="button" class="list-group-item list-group-item-success">
-      {% elif player.playing_position %}
-      <button type="button" class="list-group-item list-group-item-warning">
-      {% else %}
-      <button type="button" class="list-group-item list-group-item-default">
-      {% endif %}
-        {# Shirt Number #}
-        {% if team.role == "home" %}
-        <span class="label label-info pull-xs-left">
-        {% else %}
-        <span class="label label-danger pull-xs-left">
-        {% endif %}
-          {{player.shirt_number}}
-        </span>
-
-        {# Player Name #}
-        <span>
-          {{ player.name }}
-        </span>
-
-        {# Captain #}
-        {% if player.team_leader %}
-          <span class="label label-danger label-pill">
-            C
-          </span>
-        {% endif %}
-
-        {# Position #}
-        <span class="label label-default label-pill pull-xs-right">
-          {{ player.playing_position }}
-        </span>
-      </button>
-    {% endfor %}
+    {# Events #}
   </div>
 </div>
 

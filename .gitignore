@@ -99,9 +99,6 @@ ENV/
 node_modules/
 nbproject/
 
-apps/frontend/static/css
-apps/frontend/static/bower_components
-
 .idea/
 .project
 .pydevproject

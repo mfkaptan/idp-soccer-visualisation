@@ -6,6 +6,7 @@ from django.template import Context
 from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
+from django.db.models import F
 
 from .models import Match
 from apps.posdata.models import FrameSet
@@ -24,7 +25,8 @@ class MatchDetail(TemplateView):
         if ball:
             fields.append('z')
 
-        temp_output = serializers.serialize('python', frame_set.filter(m=min).order_by('n')[::25], fields=fields)
+        fset = frame_set.annotate(not20=F('n')%50)
+        temp_output = serializers.serialize('python', fset.filter(not20=False, m__lt=2).order_by('n'), fields=fields)
 
         return json.dumps(temp_output, cls=DjangoJSONEncoder)
 

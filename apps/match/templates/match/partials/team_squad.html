@@ -1,0 +1,58 @@
+{% load staticfiles %}
+
+{# Team Name #}
+{% if team.role == "home" %}
+  <button class="list-group-item list-group-item-info" type="button" data-toggle="collapse" data-target="#homesquad" aria-expanded="true" aria-controls="home">
+    <img class="pull-xs-left" src="{% static 'img/logos' %}/{{team.team.pk}}.png" width="50" height="50"> {{ team.name }}
+  </button>
+{% else %}
+  <button class="list-group-item list-group-item-danger" type="button" data-toggle="collapse" data-target="#awaysquad" aria-expanded="true" aria-controls="away">
+  <img class="pull-xs-left" src="{% static 'img/logos' %}/{{team.team.pk}}.png" width="50" height="50"> {{ team.name }}
+  </button>
+{% endif %}
+
+{# Team Squad #}
+{% if team.role == "home" %}
+  <div class="collapse in" id="homesquad" aria-expanded="true">
+  {% else %}
+    <div class="collapse in" id="awaysquad" aria-expanded="true">
+    {% endif %}
+    {# Players #}
+    {% for player in team.get_players %}
+      {% if player.starting %}
+        <button type="button" class="list-group-item list-group-item-success">
+      {% elif player.playing_position %}
+        <button type="button" class="list-group-item list-group-item-warning">
+      {% else %}
+        <button type="button" class="list-group-item list-group-item-default">
+      {% endif %}
+
+      {# Shirt Number #}
+      {% if team.role == "home" %}
+        <span class="label label-info pull-xs-left">
+      {% else %}
+        <span class="label label-danger pull-xs-left">
+      {% endif %}
+        {{player.shirt_number}}
+      </span>
+
+      {# Player Name #}
+      <span>
+        {{ player.name }}
+      </span>
+
+      {# Captain #}
+      {% if player.team_leader %}
+        <span class="label label-danger label-pill">
+          C
+        </span>
+      {% endif %}
+
+      {# Position #}
+      <span class="label label-default label-pill pull-xs-right">
+        {{ player.playing_position }}
+      </span>
+
+    </button>
+  {% endfor %}
+</div>
