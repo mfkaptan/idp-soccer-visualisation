@@ -18,15 +18,14 @@ from django.contrib import admin
 
 from rest_framework import routers
 
-from apps.match import views
+from .api.urls import router as api_router
 
-
-router = routers.DefaultRouter()
 
 urlpatterns = [
-    url(r'^api/', include(router.urls)),
-
     url(r'', include('apps.match.urls')),
+    url(r'', include('apps.posdata.urls')),
 
     url(r'^admin/', admin.site.urls),
+
+    url(r'^api/', include(api_router.urls)),
 ]

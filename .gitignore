@@ -96,6 +96,9 @@ ENV/
 /media/
 /private/
 
+apps/frontend/static/css
+apps/frontend/static/bower_components
+
 node_modules/
 nbproject/
 

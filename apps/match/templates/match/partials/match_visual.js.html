@@ -1,45 +1,113 @@
 {% load staticfiles %}
 
 <script type = "text/javascript">
-function init(svg, home_players, away_players)
+/* Global variables */
+var home_data = {};
+var away_data = {};
+var ball_data = {};
+var index = 0;
+var circles = {"home":{}, "away":{}, "ball":{}};
+
+function init()
 {
-
-};
-
-function parse(str, player)
-{
-
-}
-
-function convertCoord(x, y)
-{
-    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
-    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
-
-    return [x, y];
-};
-
-$(document).ready(function() {
-    /* Get svg */
     var svg = d3.select("svg");
 
-    /* Get data */
-    const h1_str = ({{data.home_first_half | safe }});
-    const h2_str = ({{data.home_second_half | safe }});
-    const a1_str = ({{data.away_first_half | safe }});
-    const a2_str = ({{data.away_second_half | safe }});
-    const b1_str = ({{data.ball_first_half | safe }});
-    const b2_str = ({{data.ball_second_half | safe }});
+    for(var player in home_data)
+    {
+        circles["home"][player] = svg.append("circle").attr("cx", -10)
+                                                   .attr("cy", -10)
+                                                   .attr("r", 8)
+                                                   .attr("stroke", "black")
+                                                   .attr("stroke-width", 2)
+                                                   .style("fill", "steelblue");
+    }
 
-    var home_data = {};
-    var away_data = {};
-    var home_circles = {};
-    var away_circles = {};
+    for(var player in away_data)
+    {
+        circles["away"][player] = svg.append("circle").attr("cx", -10)
+                                                   .attr("cy", -10)
+                                                   .attr("r", 8)
+                                                   .attr("stroke", "black")
+                                                   .attr("stroke-width", 2)
+                                                   .style("fill", "red");
+    }
 
-    for(var player in h1_str)
+    circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
+                                                                  .attr("r", 4)
+                                                                  .attr("fill", "white");
+
+};
+
+function update() {
+    var frame = {}, xy = [];
+    for(var p in home_data)
+    {
+        frame = home_data[p][index];
+        try
+        {
+            xy = convertCoord(frame.x , frame.y);
+        }
+        catch(err)
+        {
+            xy = [50, 50];
+        }
+        circles["home"][p].attr("cx", xy[0]).attr("cy", xy[1]);
+
+    }
+
+    for(var p in away_data)
+    {
+        frame = away_data[p][index];
+        try
+        {
+            xy = convertCoord(frame.x, frame.y);
+        }
+        catch(err)
+        {
+            xy = [40, 40];
+        }
+        circles["away"][p].attr("cx", xy[0]).attr("cy", xy[1]);
+    }
+
+    frame = ball_data[index];
+    xy = convertCoord(frame.x, frame.y);
+
+    circles["ball"].attr("cx", xy[0]).attr("cy", xy[1]).attr("r", 4+frame.z/8);
+
+
+    /* Stop */
+/*        if (index > 100)
+        clearInterval(document.interval);*/
+}
+
+
+/*function get_data(minute)
+{
+    // If we have the data
+    if(minute in match_mins[document.half])
+        return;
+
+    // Get data
+    const minute = ({{data.minute | safe }});
+
+    // No data
+    if(minute == -1)
+        return;
+
+    const home_str = ({{data.home | safe }});
+    const away_str = ({{data.away | safe }});
+    const ball_str = ({{data.ball | safe }});
+
+    add_data(minute, home_str, away_str, ball_str);
+}
+
+
+function add_data(home_str, away_str, ball_str)
+{
+    for(var player in home_str)
     {
         home_data[player] = JSON.parse(h1_str[player]);
-        home_circles[player] = svg.append("circle").attr("cx", -10)
+        circles["home"][player] = svg.append("circle").attr("cx", -10)
                                                    .attr("cy", -10)
                                                    .attr("r", 8)
                                                    .attr("stroke", "black")
@@ -58,45 +126,31 @@ $(document).ready(function() {
                                                    .style("fill", "red");
     }
 
-    ball_data = JSON.parse(b1_str[0]);
-    ball = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
-                                                       .attr("r", 4)
-                                                       .attr("fill", "white");
+    match_mins[document.half][minute] = data;
+}*/
 
-    var index = 0;
+function convertCoord(x, y)
+{
+    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
+    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
 
-    function update(index) {
-        var frame = {}, xy = [];
-        for(var p in home_data)
-        {
-            frame = home_data[p][index]["fields"];
-            xy = convertCoord(frame.x, frame.y);
-            home_circles[p].attr("cx", xy[0]).attr("cy", xy[1]);
+    return [x, y];
+};
 
-        }
+$(document).ready(function() {
+    /* Get data */
+    home_data = ({{data.home | safe }});
+    away_data = ({{data.away | safe }});
+    ball_data = ({{data.ball | safe }});
+    init();
 
-        for(var p in away_data)
-        {
-            frame = away_data[p][index]["fields"];
-            xy = convertCoord(frame.x, frame.y);
-            away_circles[p].attr("cx", xy[0]).attr("cy", xy[1]);
-        }
-
-        frame = ball_data[index]["fields"];
-        xy = convertCoord(frame.x, frame.y);
-
-        ball.attr("cx", xy[0]).attr("cy", xy[1]).attr("r", 4+frame.z/8);
-
-
-        /* Stop */
-        if (index > 10)
-            clearInterval(document.interval);
-    }
+    $
 
     document.interval = setInterval(function(){
-        update(index);
+        update();
         index++;
     }, 40);
 
 });
+
 </script>

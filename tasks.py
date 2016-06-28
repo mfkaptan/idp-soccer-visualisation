@@ -65,6 +65,17 @@ def requirements():
 
 
 @task
+def static(chmod=False):
+    """
+    Collects static files and optionally compresses them end sets permissive file permissions for webservers
+    :param chmod:
+    """
+    run(MANAGE + ' collectstatic --noinput')
+    if chmod:
+        run('chmod -R 755 %s' % ' '.join([os.path.join(DIR, d) for d in ['media', 'static']]))
+
+
+@task
 def setup(pyversion=DEFAULT_PYTHON):
     """
     Runs all setup tasks (no management commands)
@@ -132,6 +143,7 @@ def main(pyversion=DEFAULT_PYTHON, reset=False, migrate=False, xml=False):
     """
     setup(pyversion=pyversion)
     db(recreate=reset)
+    static(chmod=False)
 
     if reset or migrate:
         migrations()
