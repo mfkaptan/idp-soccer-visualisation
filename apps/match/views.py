@@ -29,12 +29,15 @@ class MatchDetail(TemplateView):
 
         home, away, data = {}, {}, {}
         for f in home_framesets:
-            home[f.player.shirt_number] = list(f.frame_set.filter(m=53).order_by('n').values('x', 'y'))
+            home[f.player.shirt_number] = list(f.frame_set.filter(m=54).order_by('n').values('x', 'y'))
+            #home[f.player.shirt_number] = list(f.frame_set.filter(m__lt=60).order_by('n').values('x', 'y'))
 
         for f in away_framesets:
-            away[f.player.shirt_number] = list(f.frame_set.filter(m=53).order_by('n').values('x', 'y'))
+            away[f.player.shirt_number] = list(f.frame_set.filter(m=54).order_by('n').values('x', 'y'))
+            #away[f.player.shirt_number] = list(f.frame_set.filter(m__lt=60).order_by('n').values('x', 'y'))
 
-        data["ball"] = list(ball_frameset.frame_set.filter(m=53).order_by('n').values('x', 'y', 'z'))
+        data["ball"] = list(ball_frameset.frame_set.filter(m=54).order_by('n').values('x', 'y', 'z'))
+        #data["ball"] = list(ball_frameset.frame_set.filter(m__lt=60).order_by('n').values('x', 'y', 'z'))
 
         data["home"] = home
         data["away"] = away

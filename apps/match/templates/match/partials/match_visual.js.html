@@ -6,7 +6,26 @@ var home_data = {};
 var away_data = {};
 var ball_data = {};
 var index = 0;
+var animationPaused = false;
 var circles = {"home":{}, "away":{}, "ball":{}};
+
+function animation()
+{
+    var btn = document.getElementById("playButton");
+    if(btn.value == "Play")
+    {
+        btn.innerHTML = '<i class="fa fa-pause"></i>';
+        btn.value = "Pause";
+        animationPaused = true;
+    }
+
+    else
+    {
+        btn.innerHTML = '<i class="fa fa-play"></i>';
+        btn.value = "Play";
+        animationPaused = false;
+    }
+}
 
 function init()
 {
@@ -14,22 +33,45 @@ function init()
 
     for(var player in home_data)
     {
-        circles["home"][player] = svg.append("circle").attr("cx", -10)
-                                                   .attr("cy", -10)
-                                                   .attr("r", 8)
-                                                   .attr("stroke", "black")
-                                                   .attr("stroke-width", 2)
-                                                   .style("fill", "steelblue");
+        circles["home"][player] = svg.append("g").attr("transform", "translate(100, 100)");
+
+        circles["home"][player].append("circle")
+                                 .attr("cx", 0)
+                                 .attr("cy", 0)
+                                 .attr("r", 12)
+                                 .attr("stroke", "black")
+                                 .attr("stroke-width", 2)
+                                 .style("fill", "steelblue");
+
+        circles["home"][player].append("text")
+                               .style("font-family", "Times New Roman")
+                               .style("font-size", 16)
+                               .style("fill", "white")
+                               .attr("text-anchor", "middle")
+                               .attr("alignment-baseline", "middle")
+                               .text(player);
+
     }
 
     for(var player in away_data)
     {
-        circles["away"][player] = svg.append("circle").attr("cx", -10)
-                                                   .attr("cy", -10)
-                                                   .attr("r", 8)
-                                                   .attr("stroke", "black")
-                                                   .attr("stroke-width", 2)
-                                                   .style("fill", "red");
+        circles["away"][player] = svg.append("g").attr("transform", "translate(10, 10)");
+
+        circles["away"][player].append("circle")
+                                     .attr("cx", 0)
+                                     .attr("cy", 0)
+                                     .attr("r", 12)
+                                     .attr("stroke", "black")
+                                     .attr("stroke-width", 2)
+                                     .style("fill", "red");
+
+        circles["away"][player].append("text")
+                               .style("font-family", "Times New Roman")
+                               .style("font-size", 16)
+                               .style("fill", "white")
+                               .attr("text-anchor", "middle")
+                               .attr("alignment-baseline", "middle")
+                               .text(player);
     }
 
     circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
@@ -51,7 +93,7 @@ function update() {
         {
             xy = [50, 50];
         }
-        circles["home"][p].attr("cx", xy[0]).attr("cy", xy[1]);
+        circles["home"][p].attr("transform", "translate(" + xy[0] + "," + xy[1]+")");
 
     }
 
@@ -66,7 +108,7 @@ function update() {
         {
             xy = [40, 40];
         }
-        circles["away"][p].attr("cx", xy[0]).attr("cy", xy[1]);
+        circles["away"][p].attr("transform", "translate(" + xy[0] + "," + xy[1]+")");
     }
 
     frame = ball_data[index];
@@ -144,11 +186,12 @@ $(document).ready(function() {
     ball_data = ({{data.ball | safe }});
     init();
 
-    $
-
     document.interval = setInterval(function(){
-        update();
-        index++;
+        if(!animationPaused)
+        {
+            update();
+            index++;
+        }
     }, 40);
 
 });

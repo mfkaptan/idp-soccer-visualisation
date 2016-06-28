@@ -36,8 +36,14 @@
   {% include "match/partials/field.svg" %}
 
 </div>
-
-<input type="text"
+<div class="row">
+  <div class="col-xs-1">
+  <button id="playButton" class="btn btn-block" type="button" onclick="animation();" value="Play">
+    <i class="fa fa-play"></i> Play
+  </button>
+  </div>
+  <div class="col-xs-11">
+  <input type="text"
     name="slider"
     data-provide="slider"
     data-slider-min="1"
@@ -46,4 +52,6 @@
     data-slider-max="45"
     data-slider-step="1"
     data-slider-tooltip="show"
->
+  >
+  </div>
+</div>
