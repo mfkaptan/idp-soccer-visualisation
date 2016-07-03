@@ -36,6 +36,13 @@
   {% include "match/partials/field.svg" %}
 
 </div>
+
+<form action="" method="get" id="getData">
+  <input type="hidden" name="part" value="1">
+  <input type="submit" value="OK">
+</form>
+
+<progress id="progress" class="progress progress-striped" value="0" max="100"></progress>
 <div class="row">
   <div class="col-xs-1">
   <button id="playButton" class="btn btn-block" type="button" onclick="switchState();" value="paused">

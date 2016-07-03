@@ -195,7 +195,27 @@ function convertCoordStr(x, y)
     return " " + x + ", " + y + " ";
 }
 
+
 $(document).ready(function() {
+
+    $("#getData").on('submit', function(event){
+        $.ajax({
+            type:"GET",
+            url:"/DFL-MAT-0025I9/get_data/1/1",
+            dataType : "json",
+            data: {
+
+            },
+            success: function(data){
+                teams["home"] = data.home;
+                teams["away"] = data.away;
+                ball_data = data.ball;
+                init();
+            }
+        });
+        event.preventDefault();
+    });
+
     /* Add prev and next methods to array prototype */
     Array.prototype.next = function() {
         return this[++this.current];
@@ -206,10 +226,9 @@ $(document).ready(function() {
     Array.prototype.current = -1;
 
     /* Get data */
-    teams["home"] = ({{data.home | safe }});
+/*    teams["home"] = ({{data.home | safe }});
     teams["away"] = ({{data.away | safe }});
-    ball_data = ({{data.ball | safe }});
-    init();
+    ball_data = ({{data.ball | safe }});*/
 
     slider = $('#seekbar').slider({});
 
