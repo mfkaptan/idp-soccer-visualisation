@@ -2,28 +2,26 @@
 
 <script type = "text/javascript">
 /* Global variables */
-var home_data = {};
-var away_data = {};
+var teams = {"home": {}, "away": {}};
 var ball_data = {};
 var index = 0;
-var animationPaused = false;
+var animationPaused = true;
 var circles = {"home":{}, "away":{}, "ball":{}};
 
 function animation()
 {
     var btn = document.getElementById("playButton");
-    if(btn.value == "Play")
+    if(animationPaused)
     {
+        btn.value = "playing";
         btn.innerHTML = '<i class="fa fa-pause"></i>';
-        btn.value = "Pause";
-        animationPaused = true;
+        animationPaused = false;
     }
-
     else
     {
+        btn.value = "paused";
         btn.innerHTML = '<i class="fa fa-play"></i>';
-        btn.value = "Play";
-        animationPaused = false;
+        animationPaused = true;
     }
 }
 
@@ -31,21 +29,22 @@ function init()
 {
     var svg = d3.select("svg");
 
-    for(var player in home_data)
+    for(var player in teams["home"])
     {
-        circles["home"][player] = svg.append("g").attr("transform", "translate(100, 100)");
+        var frame = teams["home"][player][0];
+
+        circles["home"][player] = svg.append("g").attr("transform",
+                                                       "translate(" + convertCoordStr(frame.x, frame.y) +")");
 
         circles["home"][player].append("circle")
-                                 .attr("cx", 0)
-                                 .attr("cy", 0)
-                                 .attr("r", 12)
-                                 .attr("stroke", "black")
-                                 .attr("stroke-width", 2)
-                                 .style("fill", "steelblue");
+                               .attr("r", 10)
+                               .attr("stroke", "black")
+                               .attr("stroke-width", 2)
+                               .style("fill", "steelblue");
 
         circles["home"][player].append("text")
                                .style("font-family", "Times New Roman")
-                               .style("font-size", 16)
+                               .style("font-size", 14)
                                .style("fill", "white")
                                .attr("text-anchor", "middle")
                                .attr("alignment-baseline", "middle")
@@ -53,21 +52,22 @@ function init()
 
     }
 
-    for(var player in away_data)
+    for(var player in teams["away"])
     {
-        circles["away"][player] = svg.append("g").attr("transform", "translate(10, 10)");
+        var frame = teams["away"][player][0];
+
+        circles["away"][player] = svg.append("g").attr("transform",
+                                                       "translate(" + convertCoordStr(frame.x, frame.y) +")");
 
         circles["away"][player].append("circle")
-                                     .attr("cx", 0)
-                                     .attr("cy", 0)
-                                     .attr("r", 12)
-                                     .attr("stroke", "black")
-                                     .attr("stroke-width", 2)
-                                     .style("fill", "red");
+                               .attr("r", 10)
+                               .attr("stroke", "black")
+                               .attr("stroke-width", 2)
+                               .style("fill", "red");
 
         circles["away"][player].append("text")
                                .style("font-family", "Times New Roman")
-                               .style("font-size", 16)
+                               .style("font-size", 14)
                                .style("fill", "white")
                                .attr("text-anchor", "middle")
                                .attr("alignment-baseline", "middle")
@@ -81,95 +81,44 @@ function init()
 };
 
 function update() {
-    var frame = {}, xy = [];
-    for(var p in home_data)
+    var ballFrame = ball_data.next();
+    var currentFrame = ballFrame.n;
+
+    xy = convertCoord(ballFrame.x, ballFrame.y);
+    circles["ball"].attr("cx", xy[0]).attr("cy", xy[1]).attr("r", 4+ballFrame.z/8);
+
+    for(t in teams)  // "home", "away"
     {
-        frame = home_data[p][index];
-        try
+        for(var p in teams[t])
         {
-            xy = convertCoord(frame.x , frame.y);
-        }
-        catch(err)
-        {
-            xy = [50, 50];
-        }
-        circles["home"][p].attr("transform", "translate(" + xy[0] + "," + xy[1]+")");
+            var frame = teams[t][p].next(); //[index];
 
+            if(frame)
+            {
+                if(frame.n == currentFrame)
+                {
+                    // In the game, update
+                    circles[t][p].attr("transform",
+                                       "translate(" + convertCoordStr(frame.x, frame.y) + ")");
+                }
+                else
+                {
+                    // Not in the game yet
+                    teams[t][p].prev();
+                }
+            }
+            else
+            {
+                // Substituted
+                if(t == "home")
+                    circles[t][p].attr("transform", "translate(20,700)");
+                else
+                    circles[t][p].attr("transform", "translate(1130,700)");
+
+            }
+        }
     }
-
-    for(var p in away_data)
-    {
-        frame = away_data[p][index];
-        try
-        {
-            xy = convertCoord(frame.x, frame.y);
-        }
-        catch(err)
-        {
-            xy = [40, 40];
-        }
-        circles["away"][p].attr("transform", "translate(" + xy[0] + "," + xy[1]+")");
-    }
-
-    frame = ball_data[index];
-    xy = convertCoord(frame.x, frame.y);
-
-    circles["ball"].attr("cx", xy[0]).attr("cy", xy[1]).attr("r", 4+frame.z/8);
-
-
-    /* Stop */
-/*        if (index > 100)
-        clearInterval(document.interval);*/
 }
-
-
-/*function get_data(minute)
-{
-    // If we have the data
-    if(minute in match_mins[document.half])
-        return;
-
-    // Get data
-    const minute = ({{data.minute | safe }});
-
-    // No data
-    if(minute == -1)
-        return;
-
-    const home_str = ({{data.home | safe }});
-    const away_str = ({{data.away | safe }});
-    const ball_str = ({{data.ball | safe }});
-
-    add_data(minute, home_str, away_str, ball_str);
-}
-
-
-function add_data(home_str, away_str, ball_str)
-{
-    for(var player in home_str)
-    {
-        home_data[player] = JSON.parse(h1_str[player]);
-        circles["home"][player] = svg.append("circle").attr("cx", -10)
-                                                   .attr("cy", -10)
-                                                   .attr("r", 8)
-                                                   .attr("stroke", "black")
-                                                   .attr("stroke-width", 2)
-                                                   .style("fill", "steelblue");
-    }
-
-    for(var player in a1_str)
-    {
-        away_data[player] = JSON.parse(a1_str[player]);
-        away_circles[player] = svg.append("circle").attr("cx", -10)
-                                                   .attr("cy", -10)
-                                                   .attr("r", 8)
-                                                   .attr("stroke", "black")
-                                                   .attr("stroke-width", 2)
-                                                   .style("fill", "red");
-    }
-
-    match_mins[document.half][minute] = data;
-}*/
 
 function convertCoord(x, y)
 {
@@ -179,10 +128,27 @@ function convertCoord(x, y)
     return [x, y];
 };
 
+function convertCoordStr(x, y)
+{
+    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
+    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
+
+    return " " + x + ", " + y + " ";
+}
+
 $(document).ready(function() {
+    /* Add prev and next methods to array prototype */
+    Array.prototype.next = function() {
+        return this[++this.current];
+    };
+    Array.prototype.prev = function() {
+        return this[--this.current];
+    };
+    Array.prototype.current = 0;
+
     /* Get data */
-    home_data = ({{data.home | safe }});
-    away_data = ({{data.away | safe }});
+    teams["home"] = ({{data.home | safe }});
+    teams["away"] = ({{data.away | safe }});
     ball_data = ({{data.ball | safe }});
     init();
 
@@ -190,7 +156,6 @@ $(document).ready(function() {
         if(!animationPaused)
         {
             update();
-            index++;
         }
     }, 40);
 
