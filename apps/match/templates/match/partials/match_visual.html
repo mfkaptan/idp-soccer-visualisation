@@ -38,19 +38,20 @@
 </div>
 <div class="row">
   <div class="col-xs-1">
-  <button id="playButton" class="btn btn-block" type="button" onclick="animation();" value="paused">
+  <button id="playButton" class="btn btn-block" type="button" onclick="switchState();" value="paused">
     <i class="fa fa-play"></i>
   </button>
   </div>
   <div class="col-xs-11">
   <input type="text"
-    name="slider"
-    data-provide="slider"
+    id="seekbar"
+    data-slider-id="seekbarSlider"
     data-slider-min="1"
-    data-slider-ticks="[1, 5, 10, 15, 20, 25, 30, 35, 40, 45]"
-    data-slider-ticks-labels="[1, 5, 10, 15, 20, 25, 30, 35, 40, 45]"
     data-slider-max="45"
     data-slider-step="1"
+    data-slider-value="1"
+    data-slider-ticks="[1, 5, 10, 15, 20, 25, 30, 35, 40, 45]"
+    data-slider-ticks-labels="[1, 5, 10, 15, 20, 25, 30, 35, 40, 45]"
     data-slider-tooltip="show"
   >
   </div>

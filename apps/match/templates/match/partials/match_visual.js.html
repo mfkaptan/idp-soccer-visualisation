@@ -3,26 +3,75 @@
 <script type = "text/javascript">
 /* Global variables */
 var teams = {"home": {}, "away": {}};
-var ball_data = {};
+var ball_data = [];
 var index = 0;
 var animationPaused = true;
 var circles = {"home":{}, "away":{}, "ball":{}};
+var slider = null;
 
-function animation()
+function switchState()
+{
+    if(animationPaused)
+        resumeAnimation();
+    else
+        pauseAnimation();
+}
+
+function resumeAnimation()
 {
     var btn = document.getElementById("playButton");
-    if(animationPaused)
+    btn.value = "playing";
+    btn.innerHTML = '<i class="fa fa-pause"></i>';
+    animationPaused = false;
+}
+
+function pauseAnimation()
+{
+    var btn = document.getElementById("playButton");
+    btn.value = "paused";
+    btn.innerHTML = '<i class="fa fa-play"></i>';
+    animationPaused = true;
+}
+
+function seek(minute)
+{
+    var lo = 0;
+    var hi = ball_data.length;
+    var half;
+
+    var loMin = ball_data[lo].m;
+    var hiMin = ball_data[hi-1].m;
+    // Binary search for minute
+    while(hiMin - loMin > 1)
     {
-        btn.value = "playing";
-        btn.innerHTML = '<i class="fa fa-pause"></i>';
-        animationPaused = false;
+        half = lo + Math.floor((hi - lo) / 2);
+
+        if(ball_data[half].m > minute)
+            hi = half;
+        else
+            lo = half;
+
+        hiMin = ball_data[hi-1].m;
+        loMin = ball_data[lo].m;
     }
-    else
+
+    // Slide to lo
+    var rewind = lo - ball_data.current;
+    ball_data.current = lo;
+
+    // Update all arrays
+    for(t in teams)  // "home", "away"
     {
-        btn.value = "paused";
-        btn.innerHTML = '<i class="fa fa-play"></i>';
-        animationPaused = true;
+        for(var p in teams[t])
+        {
+            if(teams[t][p].current != -1)
+                teams[t][p].current += rewind;
+
+            if(teams[t][p].current < 0)
+                teams[t][p].current = -1;
+        }
     }
+
 }
 
 function init()
@@ -82,7 +131,17 @@ function init()
 
 function update() {
     var ballFrame = ball_data.next();
+    if(!ballFrame)
+    {
+        pauseAnimation();
+        ball_data.prev();
+        return;
+    }
+
     var currentFrame = ballFrame.n;
+
+    if(slider.data('slider').getValue() != ballFrame.m)
+        slider.data('slider').setValue(ballFrame.m);
 
     xy = convertCoord(ballFrame.x, ballFrame.y);
     circles["ball"].attr("cx", xy[0]).attr("cy", xy[1]).attr("r", 4+ballFrame.z/8);
@@ -144,13 +203,20 @@ $(document).ready(function() {
     Array.prototype.prev = function() {
         return this[--this.current];
     };
-    Array.prototype.current = 0;
+    Array.prototype.current = -1;
 
     /* Get data */
     teams["home"] = ({{data.home | safe }});
     teams["away"] = ({{data.away | safe }});
     ball_data = ({{data.ball | safe }});
     init();
+
+    slider = $('#seekbar').slider({});
+
+    slider.on("slide", function(slideEvt) {
+        pauseAnimation();
+        seek(slideEvt.value);
+    })
 
     document.interval = setInterval(function(){
         if(!animationPaused)
