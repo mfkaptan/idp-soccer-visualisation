@@ -1,8 +1,9 @@
 import os
 
-from invoke import run, task
+from invoke import  task
 
-DEFAULT_PYTHON = '3.4'  # Used in virtualenv
+
+DEFAULT_PYTHON = '3'  # Used in virtualenv
 
 DIR = os.path.dirname(os.path.realpath(__file__))
 VENV = os.path.join(DIR, 'env')
@@ -12,7 +13,7 @@ NODE = os.path.join(DIR, 'node_modules')
 
 
 @task
-def clean():
+def clean(ctx):
     """
     Removes generate directories and compiled files
     """
@@ -21,11 +22,11 @@ def clean():
         'env',
         '**/*.pyc',
     ]
-    run('rm -rf %s' % ' '.join(patterns))
+    ctx.run('rm -rf %s' % ' '.join(patterns))
 
 
 @task
-def prepare():
+def prepare(ctx):
     """
     Creates empty directories for logs, etc
     """
@@ -33,121 +34,91 @@ def prepare():
         '../log',
         'static',
     ]
-    run('mkdir -p %s' % ' '.join([os.path.join(DIR, d) for d in dirs]))
+    ctx.run('mkdir -p %s' % ' '.join([os.path.join(DIR, d) for d in dirs]))
 
 
 @task
-def gitmodules():
-    """
-    Initializes and updates gitmodules
-    """
-    run('git submodule init')
-    run('git submodule sync')
-    run('git submodule update')
-
-
-@task
-def virtualenv(pyversion=DEFAULT_PYTHON):
+def virtualenv(ctx, pyversion=DEFAULT_PYTHON):
     """
     Creates a virtualenv with the provided Python version
     :param pyversion:
     """
-    run('virtualenv -p /usr/bin/python' + pyversion + ' env')
+    ctx.run('virtualenv -p /usr/bin/python' + pyversion + ' env')
 
 
 @task
-def requirements():
+def requirements(ctx):
     """
     Installs requirements, optionally for the development environment
     :param env:
     """
-    run(PIP + ' install -r requirements.txt')
+    ctx.run(PIP + ' install -r requirements.txt')
 
 
 @task
-def static(chmod=False):
+def static(ctx, chmod=False):
     """
-    Collects static files and optionally compresses them end sets permissive file permissions for webservers
+    Collects static files and optionally compresses them and sets permissive file permissions for webservers
     :param chmod:
     """
-    run(MANAGE + ' collectstatic --noinput')
+    ctx.run(MANAGE + ' collectstatic --noinput')
     if chmod:
-        run('chmod -R 755 %s' % ' '.join([os.path.join(DIR, d) for d in ['media', 'static']]))
+        ctx.run('chmod -R 755 %s' % ' '.join([os.path.join(DIR, d) for d in ['media', 'static']]))
 
 
 @task
-def setup(pyversion=DEFAULT_PYTHON):
+def setup(ctx, pyversion=DEFAULT_PYTHON):
     """
     Runs all setup tasks (no management commands)
     :param pyversion:
     :param env:
     """
     if not os.path.isdir(VENV):
-        virtualenv(pyversion=pyversion)
-    requirements()
+        virtualenv(ctx, pyversion=pyversion)
+    requirements(ctx)
 
 
 @task
-def db_recreate():
-    """
-    Drops and recreates the database
-    """
-    run(MANAGE + ' recreate_database')
-
-
-@task
-def db_migrate():
+def db(ctx):
     """
     Runs database migrations
     """
-    run(MANAGE + ' migrate --noinput')
+    ctx.run(MANAGE + ' migrate --noinput')
 
 
 @task
-def db(reset=False):
-    """
-    Runs all database tasks
-    :param recreate:
-    """
-    if reset:
-        db_recreate()
+def migrations(ctx):
+    ctx.run(MANAGE + ' makemigrations')
 
-    db_migrate()
+    ctx.run(MANAGE + ' migrate')
 
 
 @task
-def migrations():
-    run(MANAGE + ' makemigrations')
-
-    run(MANAGE + ' migrate')
-
-
-@task
-def import_match():
+def import_match(ctx):
     print("Importing matches")
-    run(MANAGE + ' import_matchinformation /home/kaptan/workspace/idp/TRACAB/MatchInformation__DFL-MAT-0025I9.xml')
+    ctx.run(MANAGE + ' import_matchinformation data/MatchInformation__DFL-MAT-0025I9.xml')
 
 
 @task
-def import_events():
+def import_events(ctx):
     print("Importing events")
-    run(MANAGE + ' import_events /home/kaptan/workspace/idp/TRACAB/Events_DFL-MAT-0025I9.xml')
+    ctx.run(MANAGE + ' import_events data/Events_DFL-MAT-0025I9.xml')
 
 
 @task(default=True)
-def main(pyversion=DEFAULT_PYTHON, reset=False, migrate=False, xml=False):
+def main(ctx, pyversion=DEFAULT_PYTHON, migrate=False, xml=False):
     """
     Does a full build for a python version and environment
     :param pyversion:
     :param env:
     """
-    setup(pyversion=pyversion)
-    db(recreate=reset)
-    static(chmod=False)
+    setup(ctx, pyversion=pyversion)
+    db(ctx)
+    static(ctx, chmod=False)
 
-    if reset or migrate:
-        migrations()
+    if migrate:
+        migrations(ctx)
 
-    if reset or xml:
-        import_match()
-        import_events()
+    if xml:
+        import_match(ctx)
+        import_events(ctx)

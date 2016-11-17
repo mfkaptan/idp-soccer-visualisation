@@ -3,7 +3,6 @@ var sass = require('gulp-sass');
 var watch = require('gulp-watch');
 var rename = require('gulp-rename');
 var gzip = require('gulp-gzip');
-var imagemin = require('gulp-imagemin');
 var process = require('child_process');
 
 var imageFolders = ['static', 'media'];
@@ -25,15 +24,6 @@ gulp.task('django', function () {
     process.spawn('./env/bin/python', ['-Wi', 'manage.py', 'runserver', '0.0.0.0:8000'], {
         detached: false,
         stdio: 'inherit'
-    });
-});
-
-/* Optimizes images */
-gulp.task('compress-images', function() {
-    imageFolders.forEach(function(folder) {
-        gulp.src(folder + '/**/*.{png,gif,jpeg,jpg}')
-            .pipe(imagemin({progressive: true}))
-            .pipe(gulp.dest('static/'));
     });
 });
 
