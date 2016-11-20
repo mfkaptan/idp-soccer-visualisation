@@ -74,6 +74,21 @@ function seek(minute)
 
 }
 
+function initialize()
+{
+    var toPath = d3.svg.line().x(function(d) {return d.x*10+575;})
+                              .y(function(d) {return d.y*10+360;})
+                              .interpolate("linear");
+
+    for(var player in data)
+    {
+        svg.append("path").attr("d", toPath(player))
+                          .attr("stroke", "blue")
+                          .attr("stroke-width", 2)
+                          .attr("fill", "none");
+    }
+}
+
 function init()
 {
     var svg = d3.select("svg");
