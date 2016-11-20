@@ -5,7 +5,6 @@ var rename = require('gulp-rename');
 var gzip = require('gulp-gzip');
 var process = require('child_process');
 
-var imageFolders = ['static', 'media'];
 
 /* Compile Our Sass */
 gulp.task('sass', function () {

@@ -1,10 +1,11 @@
 /* Global variables */
-var teams = {"home": {}, "away": {}};
+var teams = {home: {}, away: {}};
 var ball_data = [];
-var index = 0;
+var circles = {home: {}, away: {}, ball: {}};
 var animationPaused = true;
-var circles = {"home":{}, "away":{}, "ball":{}};
+var index = 0;
 var slider = null;
+
 
 function switchState()
 {
@@ -71,11 +72,53 @@ function seek(minute)
 
 }
 
+var createPath = d3.svg.line()
+                       .x(function(d) { return d.x*10 + 575; })
+                       .y(function(d) { return d.y*10 + 360; })
+                       .interpolate("linear");
+
 function init()
 {
     var svg = d3.select("svg");
 
-    for(var player in teams["home"])
+    d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
+        var ball = data.ball;
+        var home = data.home;
+        var away = data.away;
+        delete data;
+
+        var ballPath = svg.append("path").data([ball])
+                                         .attr("d", createPath)
+                                         .attr("stroke", "white")
+                                         .attr("stroke-width", 2)
+                                         .attr("fill", "none")
+                                         .attr("stroke-dasharray", "5 5")
+                                         .attr("id", "ball");
+
+        for(var player in home)
+        {
+            var homePath = svg.append("path").data([home[player]])
+                                             .attr("d", createPath)
+                                             .attr("stroke", "blue")
+                                             .attr("stroke-width", 1)
+                                             .attr("fill", "none")
+                                             .attr("stroke-dasharray", "0 0")
+                                             .attr("id", "h" + player);
+        }
+
+        for(var player in away)
+        {
+            var awayPath = svg.append("path").data([away[player]])
+                                             .attr("d", createPath)
+                                             .attr("stroke", "red")
+                                             .attr("stroke-width", 1)
+                                             .attr("fill", "none")
+                                             .attr("stroke-dasharray", "0 0")
+                                             .attr("id", "a" + player);
+        }
+    });
+
+/*    for(var player in teams["home"])
     {
         var frame = teams["home"][player][0];
 
@@ -123,7 +166,7 @@ function init()
     circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
                                                                   .attr("r", 4)
                                                                   .attr("fill", "white");
-
+*/
 };
 
 function update() {
@@ -195,7 +238,7 @@ function convertCoordStr(x, y)
 
 $(document).ready(function() {
 
-    $("#getData").on('submit', function(event){
+/*    $("#getData").on('submit', function(event){
         $.ajax({
             type:"GET",
             url:"/DFL-MAT-0025I9/get_data/1/1",
@@ -211,7 +254,9 @@ $(document).ready(function() {
             }
         });
         event.preventDefault();
-    });
+    });*/
+
+    init();
 
     /* Add prev and next methods to array prototype */
     Array.prototype.next = function() {
