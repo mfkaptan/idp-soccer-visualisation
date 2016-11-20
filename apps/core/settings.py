@@ -95,18 +95,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'apps.core.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'idp',
-        'USER': 'postgres',
-        'PASSWORD': 'gs.401538',
-        'HOST': '127.0.0.1',
-    },
-}
-
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
@@ -152,3 +140,9 @@ STATICFILES_FINDERS = (
     # other finders..
     'compressor.finders.CompressorFinder',
 )
+
+
+try:
+    from .local import *
+except ImportError:
+    pass
