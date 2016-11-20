@@ -1,35 +1,4 @@
-/* Global variables */
-var teams = {home: {}, away: {}};
-var ball_data = [];
 var circles = {home: {}, away: {}, ball: {}};
-var animationPaused = true;
-var index = 0;
-var slider = null;
-
-
-function switchState()
-{
-    if(animationPaused)
-        resumeAnimation();
-    else
-        pauseAnimation();
-}
-
-function resumeAnimation()
-{
-    var btn = document.getElementById("playButton");
-    btn.value = "playing";
-    btn.innerHTML = '<i class="fa fa-pause"></i>';
-    animationPaused = false;
-}
-
-function pauseAnimation()
-{
-    var btn = document.getElementById("playButton");
-    btn.value = "paused";
-    btn.innerHTML = '<i class="fa fa-play"></i>';
-    animationPaused = true;
-}
 
 function seek(minute)
 {
@@ -87,86 +56,39 @@ function init()
         var away = data.away;
         delete data;
 
-        var ballPath = svg.append("path").data([ball])
-                                         .attr("d", createPath)
-                                         .attr("stroke", "white")
-                                         .attr("stroke-width", 2)
-                                         .attr("fill", "none")
-                                         .attr("stroke-dasharray", "5 5")
-                                         .attr("id", "ball");
+        svg.append("path").data([ball])
+                          .attr("d", createPath)
+                          .attr("stroke", "white")
+                          .attr("stroke-width", 2)
+                          .attr("fill", "none")
+                          .attr("stroke-dasharray", "5 5")
+                          .attr("id", "ball");
 
         for(var player in home)
         {
-            var homePath = svg.append("path").data([home[player]])
-                                             .attr("d", createPath)
-                                             .attr("stroke", "blue")
-                                             .attr("stroke-width", 1)
-                                             .attr("fill", "none")
-                                             .attr("stroke-dasharray", "0 0")
-                                             .attr("id", "h" + player);
+            svg.append("path").data([home[player]])
+                              .attr("d", createPath)
+                              .attr("stroke", "blue")
+                              .attr("stroke-width", 1)
+                              .attr("fill", "none")
+                              .attr("stroke-dasharray", "0 0")
+                              .attr("id", "h" + player);
         }
 
         for(var player in away)
         {
-            var awayPath = svg.append("path").data([away[player]])
-                                             .attr("d", createPath)
-                                             .attr("stroke", "red")
-                                             .attr("stroke-width", 1)
-                                             .attr("fill", "none")
-                                             .attr("stroke-dasharray", "0 0")
-                                             .attr("id", "a" + player);
+            svg.append("path").data([away[player]])
+                              .attr("d", createPath)
+                              .attr("stroke", "red")
+                              .attr("stroke-width", 1)
+                              .attr("fill", "none")
+                              .attr("stroke-dasharray", "0 0")
+                              .attr("id", "a" + player);
         }
     });
 
-/*    for(var player in teams["home"])
-    {
-        var frame = teams["home"][player][0];
+    //console.log(d3.select("path#h3"));
 
-        circles["home"][player] = svg.append("g").attr("transform",
-                                                       "translate(" + convertCoordStr(frame.x, frame.y) +")");
-
-        circles["home"][player].append("circle")
-                               .attr("r", 10)
-                               .attr("stroke", "black")
-                               .attr("stroke-width", 2)
-                               .style("fill", "steelblue");
-
-        circles["home"][player].append("text")
-                               .style("font-family", "Times New Roman")
-                               .style("font-size", 14)
-                               .style("fill", "white")
-                               .attr("text-anchor", "middle")
-                               .attr("alignment-baseline", "middle")
-                               .text(player);
-
-    }
-
-    for(var player in teams["away"])
-    {
-        var frame = teams["away"][player][0];
-
-        circles["away"][player] = svg.append("g").attr("transform",
-                                                       "translate(" + convertCoordStr(frame.x, frame.y) +")");
-
-        circles["away"][player].append("circle")
-                               .attr("r", 10)
-                               .attr("stroke", "black")
-                               .attr("stroke-width", 2)
-                               .style("fill", "red");
-
-        circles["away"][player].append("text")
-                               .style("font-family", "Times New Roman")
-                               .style("font-size", 14)
-                               .style("fill", "white")
-                               .attr("text-anchor", "middle")
-                               .attr("alignment-baseline", "middle")
-                               .text(player);
-    }
-
-    circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
-                                                                  .attr("r", 4)
-                                                                  .attr("fill", "white");
-*/
 };
 
 function update() {
@@ -219,43 +141,8 @@ function update() {
     }
 }
 
-function convertCoord(x, y)
-{
-    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
-    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
-
-    return [x, y];
-};
-
-function convertCoordStr(x, y)
-{
-    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
-    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
-
-    return " " + x + ", " + y + " ";
-}
-
 
 $(document).ready(function() {
-
-/*    $("#getData").on('submit', function(event){
-        $.ajax({
-            type:"GET",
-            url:"/DFL-MAT-0025I9/get_data/1/1",
-            dataType : "json",
-            data: {
-
-            },
-            success: function(data){
-                teams["home"] = data.home;
-                teams["away"] = data.away;
-                ball_data = data.ball;
-                init();
-            }
-        });
-        event.preventDefault();
-    });*/
-
     init();
 
     /* Add prev and next methods to array prototype */
@@ -266,24 +153,32 @@ $(document).ready(function() {
         return this[--this.current];
     };
     Array.prototype.current = -1;
-
-    /* Get data */
-/*    teams["home"] = ({{data.home | safe }});
-    teams["away"] = ({{data.away | safe }});
-    ball_data = ({{data.ball | safe }});*/
-
-    slider = $('#seekbar').slider({});
-
-    slider.on("slide", function(slideEvt) {
-        pauseAnimation();
-        seek(slideEvt.value);
-    })
-
-    document.interval = setInterval(function(){
-        if(!animationPaused)
-        {
-            update();
-        }
-    }, 40);
-
 });
+
+/*    for(var player in teams["home"])
+    {
+        var frame = teams["home"][player][0];
+
+        circles["home"][player] = svg.append("g").attr("transform",
+                                                       "translate(" + convertCoordStr(frame.x, frame.y) +")");
+
+        circles["home"][player].append("circle")
+                               .attr("r", 10)
+                               .attr("stroke", "black")
+                               .attr("stroke-width", 2)
+                               .style("fill", "steelblue");
+
+        circles["home"][player].append("text")
+                               .style("font-family", "Times New Roman")
+                               .style("font-size", 14)
+                               .style("fill", "white")
+                               .attr("text-anchor", "middle")
+                               .attr("alignment-baseline", "middle")
+                               .text(player);
+
+    }
+
+    circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2).attr("cy", 20 + 680/2)
+                                                                  .attr("r", 4)
+                                                                  .attr("fill", "white");
+*/
