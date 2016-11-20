@@ -61,10 +61,9 @@ function init()
                           .attr("stroke", "white")
                           .attr("stroke-width", 2)
                           .attr("fill", "none")
-                          .attr("stroke-dasharray", "5 5")
                           .attr("id", "ball");
 
-        for(var player in home)
+/*        for(var player in home)
         {
             svg.append("path").data([home[player]])
                               .attr("d", createPath)
@@ -84,11 +83,17 @@ function init()
                               .attr("fill", "none")
                               .attr("stroke-dasharray", "0 0")
                               .attr("id", "a" + player);
-        }
+        }*/
     });
 
-    //console.log(d3.select("path#h3"));
+/*
+    var path = d3.select("#ball");
+    var len = path.node().getTotalLength();
+    path.attr("stroke-dasharray", len + " " + len)
+        .attr("stroke-dashoffset", len);
 
+    console.log(d3.select("path#ball"));
+*/
 };
 
 function update() {

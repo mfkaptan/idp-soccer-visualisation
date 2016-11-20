@@ -113,3 +113,5 @@ nbproject/
 
 run/gunicorn.sock
 junit.xml
+
+apps/posdata/static/data

@@ -28,17 +28,17 @@ def get_data(request, **kwargs):
     home, away = {}, {}
     for f in home_framesets:
         #home[f.player.shirt_number] = list(f.frame_set.filter(m=54).order_by('n').values('x', 'y', 'n'))
-        home[f.player.shirt_number] = list(f.frame_set.filter(m__gt=0, m__lte=15).order_by('n').values('x', 'y', 'n'))
+        home[f.player.shirt_number] = list(f.frame_set.order_by('n').values('x', 'y', 'n'))
         #home[f.player.shirt_number] = list(f.frame_set.order_by('n').values('x', 'y', 'n'))
 
     for f in away_framesets:
         #away[f.player.shirt_number] = list(f.frame_set.filter(m=54).order_by('n').values('x', 'y', 'n'))
-        away[f.player.shirt_number] = list(f.frame_set.filter(m__gt=0, m__lte=15).order_by('n').values('x', 'y', 'n'))
+        away[f.player.shirt_number] = list(f.frame_set.order_by('n').values('x', 'y', 'n'))
         #away[f.player.shirt_number] = list(f.frame_set.order_by('n').values('x', 'y', 'n'))
 
     #raw_data = serializers.serialize('json', ball_frameset.frame_set.filter(m=54).order_by('n'))
     #raw_data = serializers.serialize('json', ball_frameset.frame_set.filter(m=54).order_by('n'))
-    raw_data = serializers.serialize('json', ball_frameset.frame_set.filter(m__gt=0, m__lte=15).order_by('n'),
+    raw_data = serializers.serialize('json', ball_frameset.frame_set.order_by('n'),
                                      fields=('x', 'y', 'z', 'm', 'n', 't'))
 
     context["ball"] = [d['fields'] for d in json.loads(raw_data)]
