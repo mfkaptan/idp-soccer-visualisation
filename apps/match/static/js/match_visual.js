@@ -1,3 +1,8 @@
+"use strict";
+
+var ball = {};
+var home = {};
+var away = {};
 var circles = {home: {}, away: {}, ball: {}};
 
 function seek(minute)
@@ -46,55 +51,47 @@ var createPath = d3.svg.line()
                        .y(function(d) { return d.y*10 + 360; })
                        .interpolate("linear");
 
-function init()
-{
+
+function draw(from, to) {
     var svg = d3.select("svg");
 
-    d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
-        var ball = data.ball;
-        var home = data.home;
-        var away = data.away;
-        delete data;
+    d3.selectAll(".ball-path").remove();
+    d3.selectAll(".home-path").remove();
+    d3.selectAll(".away-path").remove();
 
-        svg.append("path").data([ball])
+    svg.append("path").data([ball.slice(from, to)])
+                      .attr("d", createPath)
+                      .attr("stroke", "white")
+                      .attr("stroke-width", 2)
+                      .attr("fill", "none")
+                      .attr("class", "ball-path")
+                      .attr("id", "ball");
+
+    for(var player in home)
+    {
+        svg.append("path").data([home[player].slice(from, to)])
                           .attr("d", createPath)
-                          .attr("stroke", "white")
-                          .attr("stroke-width", 2)
+                          .attr("stroke", "blue")
+                          .attr("stroke-width", 1)
                           .attr("fill", "none")
-                          .attr("id", "ball");
+                          .attr("stroke-dasharray", "0 0")
+                          .attr("class", "away-path")
+                          .attr("id", "h" + player);
+    }
 
-/*        for(var player in home)
-        {
-            svg.append("path").data([home[player]])
-                              .attr("d", createPath)
-                              .attr("stroke", "blue")
-                              .attr("stroke-width", 1)
-                              .attr("fill", "none")
-                              .attr("stroke-dasharray", "0 0")
-                              .attr("id", "h" + player);
-        }
+    for(var player in away)
+    {
+        svg.append("path").data([away[player].slice(from, to)])
+                          .attr("d", createPath)
+                          .attr("stroke", "red")
+                          .attr("stroke-width", 1)
+                          .attr("fill", "none")
+                          .attr("stroke-dasharray", "0 0")
+                          .attr("class", "away-path")
+                          .attr("id", "a" + player);
+    }
+}
 
-        for(var player in away)
-        {
-            svg.append("path").data([away[player]])
-                              .attr("d", createPath)
-                              .attr("stroke", "red")
-                              .attr("stroke-width", 1)
-                              .attr("fill", "none")
-                              .attr("stroke-dasharray", "0 0")
-                              .attr("id", "a" + player);
-        }*/
-    });
-
-/*
-    var path = d3.select("#ball");
-    var len = path.node().getTotalLength();
-    path.attr("stroke-dasharray", len + " " + len)
-        .attr("stroke-dashoffset", len);
-
-    console.log(d3.select("path#ball"));
-*/
-};
 
 function update() {
     var ballFrame = ball_data.next();
@@ -148,7 +145,13 @@ function update() {
 
 
 $(document).ready(function() {
-    init();
+
+    d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
+        ball = data.ball;
+        home = data.home;
+        away = data.away;
+        draw(0, 100);
+    })
 
     /* Add prev and next methods to array prototype */
     Array.prototype.next = function() {
