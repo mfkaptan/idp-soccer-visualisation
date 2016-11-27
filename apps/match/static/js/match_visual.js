@@ -4,6 +4,8 @@ var ball = {};
 var home = {};
 var away = {};
 var circles = {home: {}, away: {}, ball: {}};
+var fromMin = 0, fromSec = 0;
+var toMin = 0, toSec = 15;
 
 function seek(minute)
 {
@@ -52,7 +54,10 @@ var createPath = d3.svg.line()
                        .interpolate("linear");
 
 
-function draw(from, to) {
+function draw() {
+    var from = Math.round(fromMin) * 60 * 25 + Math.round(fromSec) * 25;
+    var to = Math.round(fromMin) * 60 * 25 + Math.round(toSec) * 25;
+
     var svg = d3.select("svg");
 
     d3.selectAll(".ball-path").remove();
@@ -143,14 +148,42 @@ function update() {
     }
 }
 
+function initSliders() {
+    $("#minSlider").rangeSlider({
+        bounds: {min: 0, max: 50},
+        defaultValues: {min:0, max:3},
+        step: 1
+
+    });
+
+    $("#minSlider").bind("valuesChanged", function(e, data) {
+        fromMin = data.values.min;
+        toMin = data.values.max;
+        $("#secSlider").rangeSlider("option", "bounds", {min: 0, max: (toMin-fromMin+1)*60});
+        draw();
+    });
+
+    $("#secSlider").rangeSlider({
+        bounds: {min: 0, max: 180},
+        defaultValues: {min:0, max:15},
+        step: 1
+    });
+
+    $("#secSlider").bind("valuesChanging", function(e, data) {
+        fromSec = data.values.min;
+        toSec = data.values.max;
+        draw();
+    });
+}
 
 $(document).ready(function() {
+    initSliders();
 
     d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
         ball = data.ball;
         home = data.home;
         away = data.away;
-        draw(0, 100);
+        draw();
     })
 
     /* Add prev and next methods to array prototype */
