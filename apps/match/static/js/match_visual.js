@@ -1,194 +1,218 @@
 "use strict";
 
-var ball = {};
-var home = {};
-var away = {};
-var circles = {home: {}, away: {}, ball: {}};
-var fromMin = 0, fromSec = 0;
-var toMin = 0, toSec = 15;
+var ball = {},
+  home = {},
+  away = {},
+  opac = {};
+var circles = { home: {}, away: {}, ball: {} };
+var fromMin = 0,
+  fromSec = 0;
+var toMin = 0,
+  toSec = 15;
 
 var createPath = d3.svg.line()
-                       .x(function(d) { return d.x*10 + 575; })
-                       .y(function(d) { return d.y*10 + 360; })
-                       .interpolate("linear");
+  .x(function(d) { return d.x * 10 + 575; })
+  .y(function(d) { return d.y * 10 + 360; })
+  .interpolate("linear");
 
 
-function convertCoord(x, y)
-{
-    x = x*10 + 575; // 50 + 1050/2 (x offset + half width)
-    y = y*10 + 360; // 20 + 680/2 (y offset + half height)
-    return "" + x + "," + y;
+function convertCoord(x, y) {
+  x = x * 10 + 575; // 50 + 1050/2 (x offset + half width)
+  y = y * 10 + 360; // 20 + 680/2 (y offset + half height)
+  return "" + x + "," + y;
 };
 
 
 function draw() {
-    var from = Math.round(fromMin) * 60 * 25 + Math.round(fromSec) * 25;
-    var to = Math.round(fromMin) * 60 * 25 + Math.round(toSec) * 25;
+  var from = Math.round(fromMin) * 60 * 25 + Math.round(fromSec) * 25;
+  var to = Math.round(fromMin) * 60 * 25 + Math.round(toSec) * 25;
 
-    var svg = d3.select("svg");
+  var svg = d3.select("svg");
 
-    d3.selectAll(".ball-path").remove();
-    d3.selectAll(".home-path").remove();
-    d3.selectAll(".away-path").remove();
+  d3.selectAll(".ball-path").remove();
+  d3.selectAll(".home-path").remove();
+  d3.selectAll(".away-path").remove();
 
-    /* Ball */
-    var data = ball.slice(from, to);
-    var frame = data[data.length-1];
+  /* Ball */
+  var data = ball.slice(from, to);
+  var frame = data[data.length - 1];
 
+  svg.append("path").data([data])
+    .attr("d", createPath)
+    .attr("stroke", "white")
+    .attr("stroke-width", 2)
+    .attr("fill", "none")
+    .attr("class", "ball-path")
+    .attr("id", "ball");
+
+  circles["ball"].attr("cx", frame.x * 10 + 575)
+    .attr("cy", frame.y * 10 + 360)
+    .attr("r", 4 + frame.z / 8);
+
+  for (var player in home) {
+    let id = "h" + player;
+    data = home[player].slice(from, to);
+    frame = data[data.length - 1];
     svg.append("path").data([data])
-                      .attr("d", createPath)
-                      .attr("stroke", "white")
-                      .attr("stroke-width", 2)
-                      .attr("fill", "none")
-                      .attr("class", "ball-path")
-                      .attr("id", "ball");
+      .attr("d", createPath)
+      .attr("stroke", "blue")
+      .attr("stroke-width", 1)
+      .attr("fill", "none")
+      .attr("stroke-dasharray", "0 0")
+      .attr("class", "away-path")
+      .attr("id", "h" + player)
+      .attr("opacity", opac[id]);
+    circles["home"][player].attr("opacity", opac[id])
+      .attr("transform", "translate(" + convertCoord(frame.x, frame.y) + ")")
+  }
 
-    circles["ball"].attr("cx", frame.x*10 + 575)
-                   .attr("cy", frame.y*10 + 360)
-                   .attr("r", 4+frame.z/8);
-
-    for(var player in home)
-    {
-        data = home[player].slice(from, to);
-        frame = data[data.length-1];
-        svg.append("path").data([data])
-                          .attr("d", createPath)
-                          .attr("stroke", "blue")
-                          .attr("stroke-width", 1)
-                          .attr("fill", "none")
-                          .attr("stroke-dasharray", "0 0")
-                          .attr("class", "away-path")
-                          .attr("id", "h" + player);
-        circles["home"][player].attr("transform",
-                                     "translate(" + convertCoord(frame.x, frame.y) + ")")
-    }
-
-    for(var player in away)
-    {
-        data = away[player].slice(from, to);
-        frame = data[data.length-1];
-        svg.append("path").data([data])
-                          .attr("d", createPath)
-                          .attr("stroke", "red")
-                          .attr("stroke-width", 1)
-                          .attr("fill", "none")
-                          .attr("stroke-dasharray", "0 0")
-                          .attr("class", "away-path")
-                          .attr("id", "a" + player);
-        circles["away"][player].attr("transform",
-                                     "translate(" + convertCoord(frame.x, frame.y) + ")")
-    }
+  for (var player in away) {
+    let id = "a" + player;
+    data = away[player].slice(from, to);
+    frame = data[data.length - 1];
+    svg.append("path").data([data])
+      .attr("d", createPath)
+      .attr("stroke", "red")
+      .attr("stroke-width", 1)
+      .attr("fill", "none")
+      .attr("stroke-dasharray", "0 0")
+      .attr("class", "away-path")
+      .attr("id", id)
+      .attr("opacity", opac[id]);
+    circles["away"][player].attr("opacity", opac[id])
+      .attr("transform", "translate(" + convertCoord(frame.x, frame.y) + ")")
+  }
 }
 
 
 function initSliders() {
-    $("#minSlider").rangeSlider({
-        bounds: {min: 0, max: 50},
-        defaultValues: {min:0, max:3},
-        step: 1
+  $("#minSlider").rangeSlider({
+    bounds: { min: 0, max: 50 },
+    defaultValues: { min: 0, max: 3 },
+    step: 1
+  });
 
-    });
+  $("#minSlider").bind("valuesChanged", function(e, data) {
+    fromMin = data.values.min;
+    toMin = data.values.max;
+    $("#secSlider").rangeSlider("option", "bounds", { min: 0, max: (toMin - fromMin + 1) * 60 });
+    draw();
+  });
 
-    $("#minSlider").bind("valuesChanged", function(e, data) {
-        fromMin = data.values.min;
-        toMin = data.values.max;
-        $("#secSlider").rangeSlider("option", "bounds", {min: 0, max: (toMin-fromMin+1)*60});
-        draw();
-    });
+  $("#secSlider").rangeSlider({
+    bounds: { min: 0, max: 180 },
+    defaultValues: { min: 0, max: 15 },
+    range: { min: 1, max: false },
+    step: 1,
+  });
 
-    $("#secSlider").rangeSlider({
-        bounds: {min: 0, max: 180},
-        defaultValues: {min:0, max:15},
-        range: {min:1, max:false},
-        step: 1
-    });
-
-    $("#secSlider").bind("valuesChanging", function(e, data) {
-        fromSec = data.values.min;
-        toSec = data.values.max;
-        draw();
-    });
+  $("#secSlider").bind("valuesChanging", function(e, data) {
+    fromSec = data.values.min;
+    toSec = data.values.max;
+    draw();
+  });
 }
 
 
-function initCircles()
-{
-    var svg = d3.select("svg");
+function initCircles() {
+  var svg = d3.select("svg");
 
-    for(var player in home)
-    {
-        var frame = home[player][0];
+  for (var player in home) {
+    opac["h" + player] = 1; // Set opacity
+    var frame = home[player][0];
 
-        circles["home"][player] = svg.append("g")
-                                     .attr("transform",
-                                           "translate(" + convertCoord(frame.x, frame.y) +")");
+    circles["home"][player] = svg.append("g")
+      .attr("transform",
+        "translate(" + convertCoord(frame.x, frame.y) + ")");
 
-        circles["home"][player].append("circle")
-                               .attr("r", 10)
-                               .attr("stroke", "black")
-                               .attr("stroke-width", 2)
-                               .style("fill", "steelblue");
+    circles["home"][player].append("circle")
+      .attr("r", 10)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .style("fill", "steelblue");
 
-        circles["home"][player].append("text")
-                               .style("font-family", "Times New Roman")
-                               .style("font-size", 14)
-                               .style("fill", "white")
-                               .attr("text-anchor", "middle")
-                               .attr("alignment-baseline", "middle")
-                               .text(player);
+    circles["home"][player].append("text")
+      .style("font-family", "Times New Roman")
+      .style("font-size", 14)
+      .style("fill", "white")
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .text(player);
 
-    }
+  }
 
-    for(var player in away)
-    {
-        var frame = away[player][0];
+  for (var player in away) {
+    opac["a" + player] = 1; // Set opacity
+    var frame = away[player][0];
 
-        circles["away"][player] = svg.append("g")
-                                     .attr("transform",
-                                           "translate(" + convertCoord(frame.x, frame.y) +")");
+    circles["away"][player] = svg.append("g")
+      .attr("transform",
+        "translate(" + convertCoord(frame.x, frame.y) + ")");
 
-        circles["away"][player].append("circle")
-                               .attr("r", 10)
-                               .attr("stroke", "black")
-                               .attr("stroke-width", 2)
-                               .style("fill", "red");
+    circles["away"][player].append("circle")
+      .attr("r", 10)
+      .attr("stroke", "black")
+      .attr("stroke-width", 2)
+      .style("fill", "red");
 
-        circles["away"][player].append("text")
-                               .style("font-family", "Times New Roman")
-                               .style("font-size", 14)
-                               .style("fill", "white")
-                               .attr("text-anchor", "middle")
-                               .attr("alignment-baseline", "middle")
-                               .text(player);
+    circles["away"][player].append("text")
+      .style("font-family", "Times New Roman")
+      .style("font-size", 14)
+      .style("fill", "white")
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .text(player);
 
-    }
+  }
 
-    circles["ball"] = svg.append("circle").attr("cx", 50 + 1050/2)
-                                          .attr("cy", 20 + 680/2)
-                                          .attr("r", 4)
-                                          .attr("fill", "white");
+  circles["ball"] = svg.append("circle").attr("cx", 50 + 1050 / 2)
+    .attr("cy", 20 + 680 / 2)
+    .attr("r", 4)
+    .attr("fill", "white");
+}
+
+
+function togglePath(button, team, no) {
+  var svg = d3.select("svg");
+
+  team = team === "home" ? "home" : "away";
+
+  let id = team[0] + no;
+  let p = d3.select("path#" + id);
+
+  if (p.style("opacity") == 0) { // Toggle ON
+    opac[id] = 1;
+    circles[team][no].attr("opacity", 1);
+    p.style("opacity", 1);
+    button.addClass('list-group-item-success');
+  } else { // Toggle OFF
+    opac[id] = 0;
+    circles[team][no].attr("opacity", 0);
+    p.style("opacity", 0);
+    button.removeClass('list-group-item-success');
+  }
 }
 
 
 $(document).ready(function() {
-    d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
-        ball = data.ball;
-        home = data.home;
-        away = data.away;
-        initCircles();
-        draw();
-    })
+  d3.json("../static/data/DFL-MAT-0025I9.json", function(error, data) {
+    ball = data.ball;
+    home = data.home;
+    away = data.away;
+    initCircles();
+    draw();
+  })
 
-    initSliders();
+  initSliders();
 
-    /* Add prev and next methods to array prototype */
-    Array.prototype.next = function() {
-        return this[++this.current];
-    };
-    Array.prototype.prev = function() {
-        return this[--this.current];
-    };
-    Array.prototype.current = -1;
+  /* Add prev and next methods to array prototype */
+  Array.prototype.next = function() {
+    return this[++this.current];
+  };
+  Array.prototype.prev = function() {
+    return this[--this.current];
+  };
+  Array.prototype.current = -1;
 });
 
 

@@ -12,27 +12,34 @@
 {% endif %}
 
 {# Team Squad #}
-{% if team.role == "home" %}
-  <div class="collapse in" id="homesquad" aria-expanded="true">
+<div class="collapse in"  aria-expanded="true"
+  {% if team.role == "home" %}
+    id="homesquad"
   {% else %}
-    <div class="collapse in" id="awaysquad" aria-expanded="true">
-    {% endif %}
+    id="awaysquad"
+  {% endif %}
+>
     {# Players #}
     {% for player in team.get_players %}
-      {% if player.starting %}
-        <button type="button" class="list-group-item list-group-item-success">
-      {% elif player.playing_position %}
-        <button type="button" class="list-group-item list-group-item-warning">
-      {% else %}
-        <button type="button" class="list-group-item list-group-item-default">
-      {% endif %}
+      {# Starting/Sub #}
+      <button type="button" onclick="togglePath($(this), '{{team.role}}', {{player.shirt_number}});"
+        {% if player.starting %}
+          class="list-group-item list-group-item-success"
+        {% elif player.playing_position %}
+          class="list-group-item list-group-item-warning"
+        {% else %}
+          class="list-group-item list-group-item-danger"
+        {% endif %}
+      >
 
       {# Shirt Number #}
-      {% if team.role == "home" %}
-        <span class="label label-info pull-xs-left">
-      {% else %}
-        <span class="label label-danger pull-xs-left">
-      {% endif %}
+      <span
+        {% if team.role == "home" %}
+          class="label label-info pull-xs-left"
+        {% else %}
+          class="label label-danger pull-xs-left"
+        {% endif %}
+      >
         {{player.shirt_number}}
       </span>
 
