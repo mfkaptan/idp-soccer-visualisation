@@ -20,7 +20,7 @@ def match_row(match):
     context["home_team"] = match.home_team
     context["away_team"] = match.away_team
     context["score"] = match.get_score
-    context["url"] = "#"
+    context["match_url"] = match.pk
 
     return context
 
