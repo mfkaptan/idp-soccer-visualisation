@@ -103,6 +103,7 @@ node_modules/
 nbproject/
 
 .idea/
+.vscode
 .project
 .pydevproject
 .settings/
