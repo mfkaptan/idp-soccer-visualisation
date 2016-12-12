@@ -1,10 +1,8 @@
 {% load staticfiles %}
+<!-- Events !-->
 
-{% comment %} Events {% endcomment %}
-<div>
-    Fouls
-</div>
-
-<div>
-    Goals
-</div>
+<ul>
+  {% for shot in match.get_shots %}
+  <li>{{shot}}</li>
+  {% endfor %}
+</ul>

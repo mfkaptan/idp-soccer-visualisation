@@ -1,11 +1,13 @@
 from django.db import models
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 
 from apps.match.models import Match, MatchTeam, MatchPlayer
 
 
 class EventElement(models.Model):
+    event = GenericRelation("Event")
+
     def __str__(self):
         return self.__class__.__name__
 
