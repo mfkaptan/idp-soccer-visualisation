@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.functional import cached_property
-from django.contrib.contenttypes.models import ContentType
 
 
 class Match(models.Model):
@@ -32,7 +31,7 @@ class Match(models.Model):
     @cached_property
     def get_score(self):
         return self.get_goals[-1].content_object.content_object.current_result
-        
+
     @cached_property
     def get_goals(self):
         shots = self.get_shots
