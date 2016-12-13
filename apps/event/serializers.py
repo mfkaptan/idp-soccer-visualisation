@@ -147,3 +147,28 @@ class SubstitutionSerializer(rest_serializers.ModelSerializer):
 
     class Meta:
         model = Substitution
+
+
+class CautionEventSerializer(rest_serializers.ModelSerializer):
+    caution = rest_serializers.SerializerMethodField()
+
+    def get_caution(self, obj):
+        return CautionSerializer(obj.content_object).data
+
+    class Meta:
+        model = Event
+        exclude = ["content_type"]
+
+
+class CautionSerializer(rest_serializers.ModelSerializer):
+    team = rest_serializers.SerializerMethodField()
+    player = rest_serializers.SerializerMethodField()
+
+    def get_player(self, obj):
+        return obj.player.shirt_number
+
+    def get_team(self, obj):
+        return "home" if obj.team.role == "home" else "away"
+
+    class Meta:
+        model = Caution
