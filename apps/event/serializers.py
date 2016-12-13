@@ -118,3 +118,32 @@ class PassSerializer(rest_serializers.ModelSerializer):
 class CrossSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = Cross
+
+
+class SubstitutionEventSerializer(rest_serializers.ModelSerializer):
+    substitution = rest_serializers.SerializerMethodField()
+
+    def get_substitution(self, obj):
+        return SubstitutionSerializer(obj.content_object).data
+
+    class Meta:
+        model = Event
+        exclude = ["content_type"]
+
+
+class SubstitutionSerializer(rest_serializers.ModelSerializer):
+    player_in = rest_serializers.SerializerMethodField()
+    player_out = rest_serializers.SerializerMethodField()
+    team = rest_serializers.SerializerMethodField()
+
+    def get_player_in(self, obj):
+        return obj.player_in.shirt_number
+
+    def get_player_out(self, obj):
+        return obj.player_out.shirt_number
+
+    def get_team(self, obj):
+        return "home" if obj.team.role == "home" else "away"
+
+    class Meta:
+        model = Substitution
