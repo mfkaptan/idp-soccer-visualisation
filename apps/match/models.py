@@ -41,6 +41,10 @@ class Match(models.Model):
     def get_shots(self):
         return self.event_set.filter(content_type__model="shotatgoal").order_by("time")
 
+    @cached_property
+    def get_fouls(self):
+        return self.event_set.filter(content_type__model="foul").order_by("time")
+
     def __str__(self):
         return self.game_title
 

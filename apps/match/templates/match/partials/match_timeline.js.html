@@ -2,41 +2,41 @@
 {% load events %}
 
 <style type="text/css">
-		.chart {
-			shape-rendering: crispEdges;
-		}
+  .chart {
+    shape-rendering: crispEdges;
+  }
 
-		.mini text {
-			font: 9px sans-serif;
-		}
+  .mini text {
+    font: 9px sans-serif;
+  }
 
-		.main text {
-			font: 12px sans-serif;
-		}
+  .main text {
+    font: 12px sans-serif;
+  }
 
-		.miniItem0 {
-			fill: darksalmon;
-			stroke-width: 6;
-		}
+  .miniItem0 {
+    fill: darksalmon;
+    stroke-width: 6;
+  }
 
-		.miniItem1 {
-			fill: darkolivegreen;
-			fill-opacity: .7;
-			stroke-width: 6;
-		}
+  .miniItem1 {
+    fill: darkolivegreen;
+    fill-opacity: .7;
+    stroke-width: 6;
+  }
 
-		.miniItem2 {
-			fill: slategray;
-			fill-opacity: .7;
-			stroke-width: 6;
-		}
+  .miniItem2 {
+    fill: slategray;
+    fill-opacity: .7;
+    stroke-width: 6;
+  }
 
-		.brush .extent {
-			stroke: gray;
-			fill: dodgerblue;
-			fill-opacity: .365;
-		}
-		</style>
+  .brush .extent {
+    stroke: gray;
+    fill: dodgerblue;
+    fill-opacity: .365;
+  }
+</style>
 
 <script type="text/javascript">
   $(document).ready(function() {
@@ -53,18 +53,32 @@
     var kickoff = new Date("{{ match.kickoff_time.isoformat }}");
     var end = new Date("{{ match.kickoff_time.isoformat }}").addHours(2);
 
-    var events = ({{match | shots | safe}});
-    var shots = [];
+    var shotEvents = ({{match | shots | safe}});
+    var foulEvents = ({{match | fouls | safe}});
+    var shotData = [];
+    var foulData = [];
+    var eventData = {};
 
-    for (let i = 0; i < events.length; i++) {
-      shots.push({
-        id: events[i].event_id,
-        content: events[i].shot.type,
-        start: new Date(events[i].time),
-        end: new Date(events[i].time).addSeconds(20),
-        lane: events[i].shot.team == "home" ? 0 : 1
+    for (let i = 0; i < shotEvents.length; i++) {
+      shotData.push({
+        id: shotEvents[i].event_id,
+        content: shotEvents[i].shot.type,
+        start: new Date(shotEvents[i].time),
+        end: new Date(shotEvents[i].time).addSeconds(20),
+        lane: shotEvents[i].shot.team == "home" ? 0 : 1
       })
     }
+
+    for (let i = 0; i < foulEvents.length; i++) {
+      foulData.push({
+        id: foulEvents[i].event_id,
+        content: foulEvents[i].foul.fouler + " -> " + foulEvents[i].foul.fouled,
+        start: new Date(foulEvents[i].time),
+        end: new Date(foulEvents[i].time).addSeconds(20),
+        lane: foulEvents[i].foul.team_fouler == "home" ? 0 : 1
+      })
+    }
+    eventData = {shots: shotData, fouls: foulData};
 
     var lanes = ["({{match.home_team}})", "({{match.away_team}})"];
     var laneLength = lanes.length;
@@ -80,7 +94,7 @@
       .domain([kickoff, end])
       .range([0, w]);
     var x1 = d3.time.scale()
-	  .range([0, w]);
+      .range([0, w]);
     var y1 = d3.scale.linear()
       .domain([0, laneLength])
       .range([0, mainHeight]);
@@ -114,18 +128,20 @@
 
 
     //main lanes and texts
-    main.append("g").selectAll(".laneLines")
-      .data(shots)
-      .enter().append("line")
-      .attr("x1", m[1])
-      .attr("y1", function(d) {
-        return y1(d.lane);
-      })
-      .attr("x2", w)
-      .attr("y2", function(d) {
-        return y1(d.lane);
-      })
-      .attr("stroke", "lightgray")
+    for(let data in eventData) {
+      main.append("g").selectAll(".laneLines")
+        .data(eventData[data])
+        .enter().append("line")
+        .attr("x1", m[1])
+        .attr("y1", function(d) {
+          return y1(d.lane);
+        })
+        .attr("x2", w)
+        .attr("y2", function(d) {
+          return y1(d.lane);
+        })
+        .attr("stroke", "lightgray")
+    }
 
     main.append("g").selectAll(".laneText")
       .data(lanes)
@@ -142,18 +158,20 @@
       .attr("class", "laneText");
 
     //mini lanes and texts
-    mini.append("g").selectAll(".laneLines")
-      .data(shots)
-      .enter().append("line")
-      .attr("x1", m[1])
-      .attr("y1", function(d) {
-        return y2(d.lane);
-      })
-      .attr("x2", w)
-      .attr("y2", function(d) {
-        return y2(d.lane);
-      })
-      .attr("stroke", "lightgray");
+    for(let data in eventData) {
+      mini.append("g").selectAll(".laneLines")
+        .data(eventData[data])
+        .enter().append("line")
+        .attr("x1", m[1])
+        .attr("y1", function(d) {
+          return y2(d.lane);
+        })
+        .attr("x2", w)
+        .attr("y2", function(d) {
+          return y2(d.lane);
+        })
+        .attr("stroke", "lightgray");
+    }
 
     mini.append("g").selectAll(".laneText")
       .data(lanes)
@@ -173,37 +191,41 @@
       .attr("clip-path", "url(#clip)");
 
     //mini item rects
-    mini.append("g").selectAll("miniItems")
-      .data(shots)
-      .enter().append("rect")
-      .attr("class", function(d) {
-        return "miniItem" + d.lane;
-      })
-      .attr("x", function(d) {
-        return x(d.start);
-      })
-      .attr("y", function(d) {
-        return y2(d.lane + .5) - 5;
-      })
-      .attr("width", function(d) {
-        return x(d.end) - x(d.start);
-      })
-      .attr("height", 10);
+    for(let data in eventData) {
+      mini.append("g").selectAll("miniItems")
+        .data(eventData[data])
+        .enter().append("rect")
+        .attr("class", function(d) {
+          return "miniItem" + d.lane;
+        })
+        .attr("x", function(d) {
+          return x(d.start);
+        })
+        .attr("y", function(d) {
+          return y2(d.lane + .5) - 5;
+        })
+        .attr("width", function(d) {
+          return x(d.end) - x(d.start);
+        })
+        .attr("height", 10);
+    }
 
     //mini labels
-    mini.append("g").selectAll(".miniLabels")
-      .data(shots)
-      .enter().append("text")
-      .text(function(d) {
-        return d.content;
-      })
-      .attr("x", function(d) {
-        return x(d.start);
-      })
-      .attr("y", function(d) {
-        return y2(d.lane + .5);
-      })
-      .attr("dy", ".5ex");
+    for(let data in eventData) {
+      mini.append("g").selectAll(".miniLabels")
+        .data(eventData[data])
+        .enter().append("text")
+        .text(function(d) {
+          return d.content;
+        })
+        .attr("x", function(d) {
+          return x(d.start);
+        })
+        .attr("y", function(d) {
+          return y2(d.lane + .5);
+        })
+        .attr("dy", ".5ex");
+    }
 
     //brush
     var brush = d3.svg.brush()
@@ -223,9 +245,13 @@
       var rects, labels,
         minExtent = brush.extent()[0],
         maxExtent = brush.extent()[1],
-        visItems = shots.filter(function(d) {
+        visItems = [];
+
+      for (let data in eventData) {
+        visItems.push.apply(visItems, eventData[data].filter(function(d) {
           return d.start < maxExtent && d.end > minExtent;
-        });
+        }))
+      }
 
       mini.select(".brush")
         .call(brush.extent([minExtent, maxExtent]));
@@ -269,7 +295,7 @@
           return d.id;
         })
         .attr("x", function(d) {
-          return x1(Math.max(d.start, minExtent))+2;  //+2
+          return x1(Math.max(d.start, minExtent)); //+2
         });
 
       labels.enter().append("text")
