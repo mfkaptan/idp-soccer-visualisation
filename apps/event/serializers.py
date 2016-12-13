@@ -172,3 +172,36 @@ class CautionSerializer(rest_serializers.ModelSerializer):
 
     class Meta:
         model = Caution
+
+
+class FoulEventSerializer(rest_serializers.ModelSerializer):
+    foul = rest_serializers.SerializerMethodField()
+
+    def get_foul(self, obj):
+        return FoulSerializer(obj.content_object).data
+
+    class Meta:
+        model = Event
+        exclude = ["content_type"]
+
+
+class FoulSerializer(rest_serializers.ModelSerializer):
+    team_fouler = rest_serializers.SerializerMethodField()
+    team_fouled = rest_serializers.SerializerMethodField()
+    fouler = rest_serializers.SerializerMethodField()
+    fouled = rest_serializers.SerializerMethodField()
+
+    def get_fouler(self, obj):
+        return obj.fouler.shirt_number
+
+    def get_fouled(self, obj):
+        return obj.fouled.shirt_number
+
+    def get_team_fouler(self, obj):
+        return "home" if obj.team_fouler.role == "home" else "away"
+
+    def get_team_fouled(self, obj):
+        return "home" if obj.team_fouled.role == "home" else "away"
+
+    class Meta:
+        model = Foul
