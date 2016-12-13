@@ -6,7 +6,7 @@ register = Library()
 @register.inclusion_tag('match/partials/match_row.html')
 def match_row(match):
     context = {}
-    h, a = map(int, match.get_score().split(":"))
+    h, a = map(int, match.get_score.split(":"))
     if h > a:
         context["home_class"] = "table-success"
         context["away_class"] = "table-danger"

@@ -28,8 +28,22 @@ class Match(models.Model):
     def away_team(self):
         return self.matchteam_set.get(role="guest")
 
+    @cached_property
     def get_score(self):
-        return "3:1"
+        return self.get_goals[-1].content_object.content_object.current_result
+
+    @cached_property
+    def get_goals(self):
+        shots = self.get_shots
+        return [g for g in shots if g.content_object.content_type.model == "successfulshot"]
+
+    @cached_property
+    def get_shots(self):
+        return self.event_set.filter(content_type__model="shotatgoal").order_by("time")
+
+    @cached_property
+    def get_fouls(self):
+        return self.event_set.filter(content_type__model="foul").order_by("time")
 
     def __str__(self):
         return self.game_title
