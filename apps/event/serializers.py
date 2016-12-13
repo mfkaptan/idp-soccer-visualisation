@@ -70,3 +70,51 @@ class ShotWideSerializer(rest_serializers.ModelSerializer):
 class ShotWoodWorkSerializer(rest_serializers.ModelSerializer):
     class Meta:
         model = ShotWoodWork
+
+
+class PlayEventSerializer(rest_serializers.ModelSerializer):
+    play = rest_serializers.SerializerMethodField()
+
+    def get_play(self, obj):
+        return PlaySerializer(obj.content_object).data
+
+    class Meta:
+        model = Event
+        exclude = ["content_type"]
+
+
+class PlaySerializer(rest_serializers.ModelSerializer):
+    team = rest_serializers.SerializerMethodField()
+    player = rest_serializers.SerializerMethodField()
+    type = rest_serializers.SerializerMethodField()
+    attrs = rest_serializers.SerializerMethodField()
+
+    def get_team(self, obj):
+        return "home" if obj.team.role == "home" else "away"
+
+    def get_player(self, obj):
+        return obj.player.shirt_number
+
+    def get_type(self, obj):
+        return obj.content_type.model
+
+    def get_attrs(self, obj):
+        mdl = obj.content_type.model
+        if mdl == "pass":
+            return PassSerializer(obj.content_object).data
+        elif mdl == "cross":
+            return CrossSerializer(obj.content_object).data
+
+    class Meta:
+        model = Play
+        exclude = ["content_type", "ball_possession_phase"]
+
+
+class PassSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = Pass
+
+
+class CrossSerializer(rest_serializers.ModelSerializer):
+    class Meta:
+        model = Cross
