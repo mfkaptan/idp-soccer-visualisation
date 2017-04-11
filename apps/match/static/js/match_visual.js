@@ -20,13 +20,12 @@ function convertCoord(x, y) {
   x = x * 10 + 575; // 50 + 1050/2 (x offset + half width)
   y = y * 10 + 360; // 20 + 680/2 (y offset + half height)
   return "" + x + "," + y;
-};
+}
 
 
 function draw() {
   var from = Math.round(fromMin) * 60 * 25 + Math.round(fromSec) * 25;
   var to = Math.round(fromMin) * 60 * 25 + Math.round(toSec) * 25;
-
   var svg = d3.select("svg");
 
   d3.selectAll(".ball-path").remove();
@@ -49,8 +48,9 @@ function draw() {
     .attr("cy", frame.y * 10 + 360)
     .attr("r", 4 + frame.z / 8);
 
-  for (var player in home) {
-    let id = "h" + player;
+  var player, id;
+  for (player in home) {
+    id = "h" + player;
     data = home[player].slice(from, to);
     frame = data[data.length - 1];
     svg.append("path").data([data])
@@ -66,8 +66,8 @@ function draw() {
       .attr("transform", "translate(" + convertCoord(frame.x, frame.y) + ")")
   }
 
-  for (var player in away) {
-    let id = "a" + player;
+  for (player in away) {
+    id = "a" + player;
     data = away[player].slice(from, to);
     frame = data[data.length - 1];
     svg.append("path").data([data])
@@ -86,27 +86,29 @@ function draw() {
 
 
 function initSliders() {
-  $("#minSlider").rangeSlider({
+  var minSlider = $("#minSlider");
+  var secSlider = $("#secSlider");
+  minSlider.rangeSlider({
     bounds: { min: 0, max: 50 },
     defaultValues: { min: 0, max: 3 },
     step: 1
   });
 
-  $("#minSlider").bind("valuesChanged", function(e, data) {
+  minSlider.bind("valuesChanged", function(e, data) {
     fromMin = data.values.min;
     toMin = data.values.max;
-    $("#secSlider").rangeSlider("option", "bounds", { min: 0, max: (toMin - fromMin + 1) * 60 });
+    secSlider.rangeSlider("option", "bounds", { min: 0, max: (toMin - fromMin + 1) * 60 });
     draw();
   });
 
-  $("#secSlider").rangeSlider({
+  secSlider.rangeSlider({
     bounds: { min: 0, max: 180 },
     defaultValues: { min: 0, max: 15 },
     range: { min: 1, max: false },
-    step: 1,
+    step: 1
   });
 
-  $("#secSlider").bind("valuesChanging", function(e, data) {
+  secSlider.bind("valuesChanging", function(e, data) {
     fromSec = data.values.min;
     toSec = data.values.max;
     draw();
@@ -116,10 +118,11 @@ function initSliders() {
 
 function initCircles() {
   var svg = d3.select("svg");
+  var player, frame;
 
-  for (var player in home) {
+  for (player in home) {
     opac["h" + player] = 1; // Set opacity
-    var frame = home[player][0];
+    frame = home[player][0];
 
     circles["home"][player] = svg.append("g")
       .attr("transform",
@@ -141,9 +144,9 @@ function initCircles() {
 
   }
 
-  for (var player in away) {
+  for (player in away) {
     opac["a" + player] = 1; // Set opacity
-    var frame = away[player][0];
+    frame = away[player][0];
 
     circles["away"][player] = svg.append("g")
       .attr("transform",
@@ -177,10 +180,10 @@ function togglePath(button, team, no) {
 
   team = team === "home" ? "home" : "away";
 
-  let id = team[0] + no;
-  let p = d3.select("path#" + id);
+  var id = team[0] + no;
+  var p = d3.select("path#" + id);
 
-  if (p.style("opacity") == 0) { // Toggle ON
+  if (p.style("opacity") === 0) { // Toggle ON
     opac[id] = 1;
     circles[team][no].attr("opacity", 1);
     p.style("opacity", 1);
@@ -201,7 +204,7 @@ $(document).ready(function() {
     away = data.away;
     initCircles();
     draw();
-  })
+  });
 
   initSliders();
 
