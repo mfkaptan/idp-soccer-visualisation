@@ -1,5 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Match Detail{% endblock %}
+
+{% block head_style %}
+  <style type="text/css" src="{% static 'css/timeline.css' %}"></style>
+{% endblock %}
+
 {% block body_block %}
     <div class="container-fluid text-center">
         <div class="row content">
