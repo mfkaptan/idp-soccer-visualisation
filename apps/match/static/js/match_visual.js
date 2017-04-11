@@ -26,7 +26,7 @@ function convertCoord(x, y) {
 function draw() {
   var from = Math.round(fromMin) * 60 * 25 + Math.round(fromSec) * 25;
   var to = Math.round(fromMin) * 60 * 25 + Math.round(toSec) * 25;
-  var svg = d3.select("svg");
+  var svg = d3.select("#field");
 
   d3.selectAll(".ball-path").remove();
   d3.selectAll(".home-path").remove();
@@ -117,7 +117,7 @@ function initSliders() {
 
 
 function initCircles() {
-  var svg = d3.select("svg");
+  var svg = d3.select("#field");
   var player, frame;
 
   for (player in home) {
@@ -176,14 +176,13 @@ function initCircles() {
 
 
 function togglePath(button, team, no) {
-  var svg = d3.select("svg");
-
   team = team === "home" ? "home" : "away";
 
   var id = team[0] + no;
   var p = d3.select("path#" + id);
 
-  if (p.style("opacity") === 0) { // Toggle ON
+  //noinspection EqualityComparisonWithCoercionJS
+  if (p.style("opacity") == 0) { // Toggle ON
     opac[id] = 1;
     circles[team][no].attr("opacity", 1);
     p.style("opacity", 1);
