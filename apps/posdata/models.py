@@ -3,15 +3,6 @@ from django.db import models
 from apps.match.models import Match, MatchTeam, MatchPlayer
 
 
-class FrameSetManager(models.Manager):
-    def get_for_player(self, player, min):
-        if half == 0:
-            return FrameSet.objects.filter(player_id=player)
-        else:
-            half = "firstHalf" if half == 1 else "secondHalf"
-            return FrameSet.objects.filter(player_id=player, half=half)
-
-
 class FrameSet(models.Model):
     game_section = models.CharField(max_length=20, null=True)
 
@@ -19,7 +10,11 @@ class FrameSet(models.Model):
     team = models.ForeignKey(MatchTeam, null=True)
     player = models.ForeignKey(MatchPlayer, null=True)
 
-    objects = FrameSetManager()
+    @property
+    def is_player(self):
+        if self.player:
+            return True
+        return False
 
     class Meta:
         verbose_name = "FrameSet"
@@ -27,7 +22,7 @@ class FrameSet(models.Model):
 
     def __str__(self):
         try:
-            if self.player:
+            if self.is_player:
                 return self.game_section + " " + str(self.player)
             else:
                 return "Ball"
@@ -36,17 +31,21 @@ class FrameSet(models.Model):
 
 
 class Frame(models.Model):
-    n = models.IntegerField(null=True, verbose_name="N")
+    n = models.IntegerField(null=True, verbose_name="N", db_index=True)
     t = models.DateTimeField(null=True, verbose_name="T")
     x = models.FloatField(null=True, verbose_name="X")
     y = models.FloatField(null=True, verbose_name="Y")
     z = models.FloatField(null=True, verbose_name="Z")
     s = models.FloatField(null=True, verbose_name="S")
     m = models.IntegerField(null=True, verbose_name="M")
-    ball_posession = models.IntegerField(null=True, verbose_name="BallPossession")
+    ball_possession = models.IntegerField(null=True, verbose_name="BallPossession")
     ball_status = models.IntegerField(null=True, verbose_name="BallStatus")
 
     set = models.ForeignKey(FrameSet, null=True, verbose_name="FrameSet")
+
+    @property
+    def is_player(self):
+        return self.set.is_player
 
     class Meta:
         verbose_name = "Frame"

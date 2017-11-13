@@ -25,9 +25,9 @@ class Command(BaseCommand):
         frame.s = float(e.get("S"))
         frame.x = float(e.get("X"))
         frame.y = float(e.get("Y"))
-        try:
+        try:  # ball frames
             frame.z = float(e.get("Z"))
-            frame.ball_posession = int(e.get("BallPossession"))
+            frame.ball_possession = int(e.get("BallPossession"))
             frame.ball_status = int(e.get("BallStatus"))
         except:
             pass
