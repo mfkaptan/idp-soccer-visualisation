@@ -5,6 +5,7 @@
   "private": true,
   "main": "Gulpfile.js",
   "dependencies": {
+    "d3-3d": "0.0.7"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

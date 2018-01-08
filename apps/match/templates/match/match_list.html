@@ -9,7 +9,7 @@
             <h1>DEBUG</h1>
             <div class="list-group">
             {% for match in match_list %}
-              <a href="{% url "match_detail" match.pk %}" class="list-group-item">
+              <a href="{% url "ball_possession" match.pk %}" class="list-group-item">
                 {{ match.game_title }}
               </a>
             {% endfor %}

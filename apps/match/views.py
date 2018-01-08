@@ -9,3 +9,8 @@ class MatchList(ListView):
 
 class MatchDetail(DetailView):
     model = Match
+
+
+class BallPossession(DetailView):
+    model = Match
+    template_name = "match/ball_possession.html"
