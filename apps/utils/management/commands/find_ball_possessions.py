@@ -17,8 +17,10 @@ class Command(BaseCommand):
         match_id = options.get("id", "DFL-MAT-0025I9")
         grid_size = options.get("grid_size", 3)
 
-        frames = Frame.objects.annotate(sec=F('n') % 25).filter(set__match_id=match_id, sec=0).order_by("n")
-        ball_frames = frames.filter(set__player=None, z__lte=2)
+        frames = Frame.objects.annotate(sec=F('n') % 25).filter(set__match_id=match_id,
+                                                                set__game_section="firstHalf",
+                                                                sec=0).order_by("n")
+        ball_frames = frames.filter(set__player=None, set__game_section="firstHalf", z__lte=2)
         frames = frames.exclude(set__player=None)
 
         field = {}
@@ -26,13 +28,14 @@ class Command(BaseCommand):
         for b in ball_frames:
             candidates = frames.filter(n=b.n, x__gte=b.x-2, x__lte=b.x+2, y__gte=b.y-2, y__lte=b.y+2)
             for c in candidates:
+                shirt_no = c.set.player.shirt_number
                 g = self._find_grid(grid_size, c.x, c.y)
                 if g < 0:
                     continue
-                if c.set.player_id in field:
-                    field[c.set.player_id][g] = field[c.set.player_id].get(g, 0) + 1
+                if shirt_no in field:
+                    field[shirt_no][g] = field[shirt_no].get(g, 0) + 1
                 else:
-                    field[c.set.player_id] = {g: 1}
+                    field[shirt_no] = {g: 1}
 
         filename = str(frames.first().set.match.pk) + "_bp_gs%d.json" % grid_size
         with open(filename, "w") as outfile:
