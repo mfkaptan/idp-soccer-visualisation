@@ -29,22 +29,23 @@ class Command(BaseCommand):
             candidates = frames.filter(n=b.n, x__gte=b.x-2, x__lte=b.x+2, y__gte=b.y-2, y__lte=b.y+2)
             for c in candidates:
                 shirt_no = c.set.player.shirt_number
+                side = "home" if c.set.team.role == "home" else "away"
+                key = side + str(shirt_no)
                 g = self._find_grid(grid_size, c.x, c.y)
                 if g < 0:
                     continue
-                if shirt_no in field:
-                    field[shirt_no][g] = field[shirt_no].get(g, 0) + 1
+                if key in field:
+                    field[key][g] = field[key].get(g, 0) + 1
                 else:
-                    field[shirt_no] = {g: 1}
+                    field[key] = {g: 1}
 
         filename = str(frames.first().set.match.pk) + "_bp_gs%d.json" % grid_size
         with open(filename, "w") as outfile:
             json.dump(field, outfile, separators=(',', ':'))
 
-
     def _find_grid(self, grid_size, x, y):
         fx = 105 // grid_size  # x grids
-        gx = (x + 105/2) / grid_size
-        gy = (y + 68/2) / grid_size
+        gx = int((x + 105/2) / grid_size)
+        gy = int((y + 68/2) / grid_size)
 
         return int(gy * fx + gx)

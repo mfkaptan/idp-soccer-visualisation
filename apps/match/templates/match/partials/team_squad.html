@@ -22,7 +22,7 @@
     {# Players #}
     {% for player in team.get_players %}
       {# Starting/Sub #}
-      <button type="button" onclick="togglePath($(this), '{{team.role}}', {{player.shirt_number}});"
+      <button type="button" onclick="selectPlayer($(this), '{{team.role}}', {{player.shirt_number}});"
         {% if player.starting %}
           class="list-group-item list-group-item-success"
         {% elif player.playing_position %}

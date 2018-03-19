@@ -5,6 +5,7 @@ var color = d3.scaleLinear()
   .range(["#eeee00", "#ee0000"]);
 var cubesGroup = svg.append('g').attr('class', 'cubes');
 var mx, my, mouseX, mouseY;
+var possessionData, selectedPlayer;
 
 var cubes3D = d3._3d()
     .shape('CUBE')
@@ -15,6 +16,14 @@ var cubes3D = d3._3d()
     .rotateX(-startAngle)
     .origin(origin)
     .scale(scale);
+
+function selectPlayer(button, team, no) {
+  team = team === "home" ? "home" : "away";
+
+  var id = team[0] + no;
+  console.log(team+no);
+  init(team+no);
+}
 
 function processData(data, tt){
 
@@ -47,7 +56,6 @@ function processData(data, tt){
         .attr('d', cubes3D.draw);
 
     faces.exit().remove();
-
     /* --------- TEXT ---------*/
 
     var texts = cubes.merge(ce).selectAll('text.text').data(function(d){
@@ -90,69 +98,6 @@ function processData(data, tt){
 
 }
 
-var data = {
-    "131": 1,
-    "6": 4,
-    "135": 1,
-    "10": 1,
-    "11": 1,
-    "12": 1,
-    "141": 1,
-    "15": 2,
-    "16": 1,
-    "17": 4,
-    "18": 2,
-    "19": 3,
-    "20": 4,
-    "23": 2,
-    "24": 2,
-    "25": 2,
-    "27": 2,
-    "28": 2,
-    "31": 2,
-    "33": 1,
-    "34": 5,
-    "35": 1,
-    "36": 2,
-    "39": 4,
-    "40": 2,
-    "41": 5,
-    "42": 1,
-    "43": 2,
-    "44": 1,
-    "45": 2,
-    "47": 1,
-    "48": 1,
-    "51": 1,
-    "54": 1,
-    "57": 1,
-    "58": 1,
-    "60": 1,
-    "61": 1,
-    "62": 1,
-    "65": 1,
-    "66": 1,
-    "69": 1,
-    "70": 1,
-    "71": 1,
-    "72": 1,
-    "73": 2,
-    "74": 3,
-    "143": 1,
-    "77": 1,
-    "78": 1,
-    "79": 2,
-    "84": 2,
-    "85": 3,
-    "86": 1,
-    "87": 2,
-    "88": 1,
-    "89": 2,
-    "91": 1,
-    "92": 2,
-    "96": 1
-  }
-
 var grid_size = 5;
 var fx = 105 / grid_size;  // x grids
 
@@ -166,13 +111,17 @@ function getZ(k) {
   return gy * grid_size - 68/2;
 }
 
-function init(){
+function init(selectedPlayer){
+    cubesGroup.selectAll('g.cube').remove();
+
     cubesData = [];
 
-    for(var k in data) {
-        var _cube = makeCube(-data[k], getX(k), getZ(k));
+    var playerData = possessionData[selectedPlayer];
+    console.log(playerData);
+    for(var k in playerData) {
+        var _cube = makeCube(-playerData[k], getX(k), getZ(k));
         _cube.id = 'cube_' + k;
-        _cube.height = -data[k];
+        _cube.height = -playerData[k];
         cubesData.push(_cube);
     }
 
@@ -213,5 +162,8 @@ function makeCube(h, x, z){
 // d3.selectAll('button').on('click', init);
 
 $(document).ready(function() {
-  init();
+  d3.json("../static/data/DFL-MAT-0025I9_bp_gs5.json", function(error, dat) {
+    possessionData = dat;
+    init(selectedPlayer);
+  });
 });
