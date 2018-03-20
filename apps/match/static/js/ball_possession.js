@@ -218,7 +218,7 @@ function init(){
   console.log(playerData);
   for(var k in playerData) {
       var h = -playerData[k]/3;
-      var _cube = makeCube(h, getX(k), getZ(k));
+      var _cube = makeCube(h, getX(k), -getZ(k));
       _cube.id = 'cube_' + k;
       _cube.height = h;
       cubesData.push(_cube);
