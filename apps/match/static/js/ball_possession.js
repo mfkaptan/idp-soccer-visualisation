@@ -1,4 +1,4 @@
-var origin = [1050/2+60, 680/2+20], scale = 10, cubesData = [], alpha = 0, beta = 0, startAngle = Math.PI/6;
+var origin = [1050/2+60, 680/2+20], scale = 10, cubesData = [], alpha = 0, beta = 0, startAngle = Math.PI/8;
 var svg = d3.select('svg').call(d3.drag().on('drag', dragged).on('start', dragStart).on('end', dragEnd)).append('g');
 var color = d3.scaleLinear()
   .domain([0, -3])
@@ -6,14 +6,23 @@ var color = d3.scaleLinear()
 var cubesGroup = svg.append('g').attr('class', 'cubes');
 var mx, my, mouseX, mouseY;
 var possessionData, selectedPlayer="home1", selectedHalf="firstHalf", selectedGridSize="5";
+var key = function(d){ return d.id; };
+var plane = [];
+
+var plane3D = d3._3d()
+    .shape('PLANE')
+    .origin(origin)
+    .rotateY(-Math.PI/8)
+    .rotateX(-Math.PI/5)
+    .scale(scale);
 
 var cubes3D = d3._3d()
     .shape('CUBE')
     .x(function(d){ return d.x; })
     .y(function(d){ return d.y; })
     .z(function(d){ return d.z; })
-    .rotateY(startAngle)
-    .rotateX(-startAngle)
+    .rotateY(-Math.PI/8)
+    .rotateX(-Math.PI/5)
     .origin(origin)
     .scale(scale);
 
@@ -36,7 +45,23 @@ function selectGridSize(gridSize) {
   loadData();
 }
 
-function processData(data, tt){
+function processData(data, planeData, tt){
+    /* ----------- PLANE ----------- */
+
+    var plane = svg.selectAll('path.plane').data(planeData, key);
+
+    plane
+        .enter()
+        .append('path')
+        .attr('class', '_3d plane')
+        .merge(plane)
+        .attr('stroke', 'black')
+        .attr('stroke-width', 0.3)
+        .attr('fill', function(d){ return d.ccw ? 'lightgreen' : 'darkgreen'; })
+        .attr('fill-opacity', 0.1)
+        .attr('d', plane3D.draw);
+
+    plane.exit().remove();
 
     /* --------- CUBES ---------*/
 
@@ -67,6 +92,7 @@ function processData(data, tt){
         .attr('d', cubes3D.draw);
 
     faces.exit().remove();
+
     /* --------- TEXT ---------*/
 
     var texts = cubes.merge(ce).selectAll('text.text').data(function(d){
@@ -123,21 +149,24 @@ function getZ(k) {
 }
 
 function init(){
-    cubesGroup.selectAll('g.cube').remove();
 
-    cubesData = [];
+  plane = [[[-105/2,1,-68/2], [-105/2,1,68/2], [105/2,1,68/2], [105/2,1,-68/2]]];
 
-    var playerData = possessionData[selectedPlayer][selectedHalf];
-    console.log(playerData);
-    for(var k in playerData) {
-        var h = -playerData[k]/3;
-        var _cube = makeCube(h, getX(k), getZ(k));
-        _cube.id = 'cube_' + k;
-        _cube.height = h;
-        cubesData.push(_cube);
-    }
+  cubesGroup.selectAll('g.cube').remove();
 
-    processData(cubes3D(cubesData), 1000);
+  cubesData = [];
+
+  var playerData = possessionData[selectedPlayer][selectedHalf];
+  console.log(playerData);
+  for(var k in playerData) {
+      var h = -playerData[k]/3;
+      var _cube = makeCube(h, getX(k), getZ(k));
+      _cube.id = 'cube_' + k;
+      _cube.height = h;
+      cubesData.push(_cube);
+  }
+
+  processData(cubes3D(cubesData), plane3D(plane), 1000);
 }
 
 function dragStart(){
@@ -150,7 +179,11 @@ function dragged(){
     mouseY = mouseY || 0;
     beta   = (d3.event.x - mx + mouseX) * Math.PI / 230 ;
     alpha  = (d3.event.y - my + mouseY) * Math.PI / 230  * (-1);
-    processData(cubes3D.rotateY(beta + startAngle).rotateX(alpha - startAngle)(cubesData), 0);
+
+    cubeDrag = cubes3D.rotateY(beta + startAngle).rotateX(alpha - startAngle)(cubesData);
+    planeDrag = plane3D.rotateY(beta + startAngle).rotateX(alpha - startAngle)(plane);
+
+    processData(cubeDrag, planeDrag, 0);
 }
 
 function dragEnd(){
