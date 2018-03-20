@@ -3,7 +3,11 @@
 {# <h1 class="text-xs-center">{{ match.game_title }}</h1>#}
 <div class="card">
   {# Field #}
-  {% include "match/partials/field.svg" %}
+  <svg id="field" stroke="white" version="1.1" viewBox="0 0 1150 720" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <rect fill="green" height="720" width="1150" x="0" y="0"/>
+  </svg>
+
+  {#  {% include "match/partials/field.svg" %} #}
 </div>
 
 {# Half #}
@@ -11,16 +15,26 @@
   <div class="row">
     <div class="col-xs-3">
       <label for="gridSize">Grid Size: </label>
-      <input id="gridSize" placeholder="5" name="gridSize" type="number" min="1" max="10" onchange="selectGridSize(this.value);"/>
+      <input id="gridSize" placeholder="2" value="2" name="gridSize" type="number" min="1" max="5" onchange="selectGridSize(this.value);"/>
+      <label for="domain">Colors: </label>
+      <input id="domain" placeholder="4" value="4" name="domain" type="number" min="2" max="6" onchange="selectDomain(this.value-1);"/>
     </div>
     <div class="col-xs-3">
-      <button class="btn btn-block" id="firstHalf" onclick="selectHalf('firstHalf');">First Half</button>
+      <button class="btn btn-block btn-secondary" id="firstHalf" onclick="selectHalf('firstHalf');">
+      <span class="oi oi-arrow-left" title="arrow left" aria-hidden="true" style="color: red;"></span>
+        First Half
+      <span class="oi oi-arrow-right" title="arrow right" aria-hidden="true" style="color: steelblue;"></span>
+      </button>
     </div>
     <div class="col-xs-3">
-      <button class="btn btn-block" id="secondHalf" onclick="selectHalf('secondHalf');">Second Half</button>
+      <button class="btn btn-block btn-secondary" id="secondHalf" onclick="selectHalf('secondHalf');">
+        <span class="oi oi-arrow-left" title="arrow left" aria-hidden="true" style="color: steelblue;"></span>
+        Second Half
+        <span class="oi oi-arrow-right" title="arrow right" aria-hidden="true" style="color: red;"></span>
+      </button>
     </div>
     <div class="col-xs-3">
-      <button class="btn btn-block" id="fullMatch" onclick="selectHalf('fullMatch');">Full Match</button>
+      <button class="btn btn-block btn-secondary" id="fullMatch" onclick="selectHalf('fullMatch');">Full Match</button>
     </div>
   </div>
 </div>

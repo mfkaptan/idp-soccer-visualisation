@@ -67,7 +67,7 @@ class Command(BaseCommand):
 
     def _find_grid(self, grid_size, x, y):
         fx = 105 // grid_size  # x grids
-        gx = int((x + 105/2) / grid_size)
-        gy = int((y + 68/2) / grid_size)
+        gx = int((x + 105/2) // grid_size)
+        gy = int((y + 68/2) // grid_size)
 
         return int(gy * fx + gx)
