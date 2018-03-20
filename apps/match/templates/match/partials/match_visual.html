@@ -6,6 +6,25 @@
   {% include "match/partials/field.svg" %}
 </div>
 
+{# Half #}
+<div class="container">
+  <div class="row">
+    <div class="col-xs-3">
+      <label for="gridSize">Grid Size: </label>
+      <input id="gridSize" placeholder="5" name="gridSize" type="number" min="1" max="10" onchange="selectGridSize(this.value);"/>
+    </div>
+    <div class="col-xs-3">
+      <button class="btn btn-block" id="firstHalf" onclick="selectHalf('firstHalf');">First Half</button>
+    </div>
+    <div class="col-xs-3">
+      <button class="btn btn-block" id="secondHalf" onclick="selectHalf('secondHalf');">Second Half</button>
+    </div>
+    <div class="col-xs-3">
+      <button class="btn btn-block" id="fullMatch" onclick="selectHalf('fullMatch');">Full Match</button>
+    </div>
+  </div>
+</div>
+
 {# Slider #}
 <div class="container">
   <div class="row">

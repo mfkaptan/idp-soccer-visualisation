@@ -1,11 +1,11 @@
-var origin = [1050/2+80, 680/2+20], scale = 10, cubesData = [], alpha = 0, beta = 0, startAngle = Math.PI/6;
+var origin = [1050/2+60, 680/2+20], scale = 10, cubesData = [], alpha = 0, beta = 0, startAngle = Math.PI/6;
 var svg = d3.select('svg').call(d3.drag().on('drag', dragged).on('start', dragStart).on('end', dragEnd)).append('g');
 var color = d3.scaleLinear()
-  .domain([0, -15])
+  .domain([0, -3])
   .range(["#eeee00", "#ee0000"]);
 var cubesGroup = svg.append('g').attr('class', 'cubes');
 var mx, my, mouseX, mouseY;
-var possessionData, selectedPlayer;
+var possessionData, selectedPlayer="home1", selectedHalf="firstHalf", selectedGridSize="5";
 
 var cubes3D = d3._3d()
     .shape('CUBE')
@@ -22,7 +22,18 @@ function selectPlayer(button, team, no) {
 
   var id = team[0] + no;
   console.log(team+no);
-  init(team+no);
+  selectedPlayer = team+no;
+  init();
+}
+
+function selectHalf(half) {
+  selectedHalf = half;
+  init();
+}
+
+function selectGridSize(gridSize) {
+  selectedGridSize = gridSize;
+  loadData();
 }
 
 function processData(data, tt){
@@ -98,30 +109,31 @@ function processData(data, tt){
 
 }
 
-var grid_size = 5;
-var fx = 105 / grid_size;  // x grids
 
 function getX(k) {
+  var fx = 105 / selectedGridSize;  // x grids
   var gx = k%fx;
-  return gx * grid_size - 105/2;
+  return gx * selectedGridSize - 105/2;
 }
 
 function getZ(k) {
+  var fx = 105 / selectedGridSize;  // x grids
   var gy = k/fx;
-  return gy * grid_size - 68/2;
+  return gy * selectedGridSize - 68/2;
 }
 
-function init(selectedPlayer){
+function init(){
     cubesGroup.selectAll('g.cube').remove();
 
     cubesData = [];
 
-    var playerData = possessionData[selectedPlayer];
+    var playerData = possessionData[selectedPlayer][selectedHalf];
     console.log(playerData);
     for(var k in playerData) {
-        var _cube = makeCube(-playerData[k], getX(k), getZ(k));
+        var h = -playerData[k]/3;
+        var _cube = makeCube(h, getX(k), getZ(k));
         _cube.id = 'cube_' + k;
-        _cube.height = -playerData[k];
+        _cube.height = h;
         cubesData.push(_cube);
     }
 
@@ -148,22 +160,26 @@ function dragEnd(){
 
 function makeCube(h, x, z){
     return [
-        {x: x - 2, y: h, z: z + 2}, // FRONT TOP LEFT
-        {x: x - 2, y: 0, z: z + 2}, // FRONT BOTTOM LEFT
-        {x: x + 2, y: 0, z: z + 2}, // FRONT BOTTOM RIGHT
-        {x: x + 2, y: h, z: z + 2}, // FRONT TOP RIGHT
-        {x: x - 2, y: h, z: z - 2}, // BACK  TOP LEFT
-        {x: x - 2, y: 0, z: z - 2}, // BACK  BOTTOM LEFT
-        {x: x + 2, y: 0, z: z - 2}, // BACK  BOTTOM RIGHT
-        {x: x + 2, y: h, z: z - 2}, // BACK  TOP RIGHT
+        {x: x - 0.4 * selectedGridSize, y: h, z: z + 0.4 * selectedGridSize}, // FRONT TOP LEFT
+        {x: x - 0.4 * selectedGridSize, y: 0, z: z + 0.4 * selectedGridSize}, // FRONT BOTTOM LEFT
+        {x: x + 0.4 * selectedGridSize, y: 0, z: z + 0.4 * selectedGridSize}, // FRONT BOTTOM RIGHT
+        {x: x + 0.4 * selectedGridSize, y: h, z: z + 0.4 * selectedGridSize}, // FRONT TOP RIGHT
+        {x: x - 0.4 * selectedGridSize, y: h, z: z - 0.4 * selectedGridSize}, // BACK  TOP LEFT
+        {x: x - 0.4 * selectedGridSize, y: 0, z: z - 0.4 * selectedGridSize}, // BACK  BOTTOM LEFT
+        {x: x + 0.4 * selectedGridSize, y: 0, z: z - 0.4 * selectedGridSize}, // BACK  BOTTOM RIGHT
+        {x: x + 0.4 * selectedGridSize, y: h, z: z - 0.4 * selectedGridSize}, // BACK  TOP RIGHT
     ];
 }
 
 // d3.selectAll('button').on('click', init);
 
-$(document).ready(function() {
-  d3.json("../static/data/DFL-MAT-0025I9_bp_gs5.json", function(error, dat) {
+function loadData() {
+  d3.json("../static/data/DFL-MAT-0025I9_bp_gs" + selectedGridSize + ".json", function(error, dat) {
     possessionData = dat;
-    init(selectedPlayer);
+    init();
   });
+}
+
+$(document).ready(function() {
+  loadData();
 });
