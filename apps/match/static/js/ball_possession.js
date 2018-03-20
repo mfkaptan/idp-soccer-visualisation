@@ -9,19 +9,21 @@ var mx, my, mouseX, mouseY;
 var possessionData, selectedPlayer="home1", selectedHalf="firstHalf", selectedGridSize=2;
 var key = function(d){ return d.id; };
 var cubesData = [], planeData = [], linesData = [];
+var startY = -Math.PI/3;
+var startX = -Math.PI/6;
 
 var plane3D = d3._3d()
     .shape('PLANE')
     .origin(origin)
-    .rotateY(-Math.PI/8)
-    .rotateX(-Math.PI/5)
+    .rotateY(startY)
+    .rotateX(startX)
     .scale(scale);
 
 var lines3D = d3._3d()
     .shape('LINE_STRIP')
     .origin(origin)
-    .rotateY(-Math.PI/8)
-    .rotateX(-Math.PI/5)
+    .rotateY(startY)
+    .rotateX(startX)
     .scale(scale);
 
 var cubes3D = d3._3d()
@@ -29,8 +31,8 @@ var cubes3D = d3._3d()
     .x(function(d){ return d.x; })
     .y(function(d){ return d.y; })
     .z(function(d){ return d.z; })
-    .rotateY(-Math.PI/8)
-    .rotateX(-Math.PI/5)
+    .rotateY(startY)
+    .rotateX(startX)
     .origin(origin)
     .scale(scale);
 
