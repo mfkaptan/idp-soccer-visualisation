@@ -47,8 +47,9 @@ class Command(BaseCommand):
         ball_frames = ball_frames.filter(set__game_section=half_name)
         half = frames.filter(set__game_section=half_name)
 
-        for b in ball_frames.filter(set__game_section=half_name):
-            candidates = half.filter(n=b.n, x__gte=b.x-2, x__lte=b.x+2, y__gte=b.y-2, y__lte=b.y+2)
+        for b in ball_frames:
+            candidates = half.filter(n=b.n, x__gte=b.x-grid_size/2, x__lte=b.x+grid_size/2,
+                                     y__gte=b.y-grid_size/2, y__lte=b.y+grid_size/2)
             for c in candidates:
                 shirt_no = c.set.player.shirt_number
                 side = "home" if c.set.team.role == "home" else "away"
